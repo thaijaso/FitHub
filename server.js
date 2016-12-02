@@ -56,13 +56,49 @@ app.use('/js', express.static(__dirname + '/node_modules/jquery/dist'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-
 server.listen(app.get('port'), function() {
 	console.log('listening on port:', app.get('port'));
 });
 
 app.get('/', (req, res) => {
 	res.render('login.ejs');
+});
+
+const trainerUsername = 'trainer';
+const trainerPassword = 'password';
+
+app.post('/login', (req, res) => {
+	var username = req.body.username;
+	var password = req.body.password;
+
+	//check if trainer is logging in
+	if (username == trainerUsername && password == trainerPassword) {
+		res.render('coverflow.ejs');
+	} else {
+
+		var query = "SELECT * FROM Client "+
+					"WHERE username = " + "'" + username + "'" + " AND " + "password = " + "'" + password + "'";
+
+		pool.getConnection((err, connection) => {
+			if (err) {
+				console.log(err);
+				res.send(err);
+			}
+
+			connection.query(query, (err, rows) => {
+				if (err) {
+					console.log(err);
+					res.send(err);
+				}
+
+				if (rows.length) {
+					res.redirect('/dashboard');
+				} else {
+					res.send('cant find user');
+				}
+			});
+		});	
+	}
 });
 
 app.get('/register', (req, res) => {
@@ -75,24 +111,37 @@ app.post('/register', (req, res) => {
 	var username = req.body.username;
 	var password = req.body.password;
 
-	var query = "INSERT INTO Client (username, password, firstName, lastName, dateJoined) " +
+	var registerQuery = "INSERT INTO Client (username, password, firstName, lastName, dateJoined) " +
 				"VALUES (" + "'" + username + "'" + ", " + "'" + password + "'" + ", " + 
 				"'" + first + "'" + ", " + "'" + last + "'" + ", " + "NOW()" + ")"; 
 
-	
 	pool.getConnection((err, connection) => {
 		if (err) {
 			console.log(err);
 			res.send(err);
 		}
 
-		connection.query(query, (err, rows) => {
+		connection.query(registerQuery, (err, rows) => {
 			if (err) {
 				console.log(err);
 				res.send(err);
 			}
 
-			res.send(rows);
+			var userId = rows.insertId;
+
+			var nutritionQuery = "INSERT INTO ClientNutrition (clientId, maxCalories, minWater, " +
+																"maxProtein, maxFats, maxCarbs) " +
+									"VALUES (" + userId + ", 2000, 64, 56, 78, 325)";
+
+			connection.query(nutritionQuery, (err, rows) => {
+				if (err) {
+					console.log(err);
+					res.send(err);
+				}
+
+				console.log(rows);
+				res.redirect('/dashboard');
+			});
 		});
 	}); 
 });
