@@ -11,7 +11,7 @@ const async = require('async');
 
 //setup heroku database
 const pool = mysql.createPool({
-  	host     : 'thaijaso.vergil.u.washington.edu:',
+  	host     : 'vergil.u.washington.edu',
   	port     : '8865',
   	user     : 'root',
   	password : 'ou8inxs2ic',
@@ -65,6 +65,38 @@ app.get('/', (req, res) => {
 	res.render('login.ejs');
 });
 
+app.get('/register', (req, res) => {
+	res.render('register.ejs');
+});
+
+app.post('/register', (req, res) => {
+	var first = req.body.firstname;
+	var last = req.body.lastname;
+	var username = req.body.username;
+	var password = req.body.password;
+
+	var query = "INSERT INTO Client (username, password, firstName, lastName, dateJoined) " +
+				"VALUES (" + "'" + username + "'" + ", " + "'" + password + "'" + ", " + 
+				"'" + first + "'" + ", " + "'" + last + "'" + ", " + "NOW()" + ")"; 
+
+	
+	pool.getConnection((err, connection) => {
+		if (err) {
+			console.log(err);
+			res.send(err);
+		}
+
+		connection.query(query, (err, rows) => {
+			if (err) {
+				console.log(err);
+				res.send(err);
+			}
+
+			res.send(rows);
+		});
+	}); 
+});
+
 app.get('/dashboard', (req, res) => {
 	res.render('dashboard.ejs');
 });
@@ -84,4 +116,4 @@ app.get('/coverflow', (req, res) => {
 app.get('/clients/:id', (req, res) => {
 	console.log(req.params);
 	res.render('client.ejs');
-})
+});
