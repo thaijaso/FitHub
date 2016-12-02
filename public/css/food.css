@@ -1,0 +1,48 @@
+div.box-body {
+    overflow: auto;
+    white-space: nowrap;
+    /*width: 800px;*/
+    margin: 0 auto;
+}
+
+.addGrad-Form {
+    display: block;
+}
+
+.form-group label {
+    font-size: 16px;
+    font-weight: normal;
+}
+
+.modal.modal-wide .modal-dialog {
+    width: 70%;
+}
+
+.modal-wide .modal-body {
+    overflow-y: auto;
+}
+
+
+.red-border {
+    /*border: 1px solid red !important;*/
+}
+
+
+.green-border {
+    border: 1px solid green !important;
+}
+
+input:required:focus {
+    border: 1px solid red;
+    outline: none;
+}
+
+textarea:required:focus {
+    border: 1px solid red;
+    outline: none;
+}
+
+#errmsg {
+    color: red;
+    font-size: 15px;
+}
