@@ -159,7 +159,26 @@ app.get('/diary', (req, res) => {
 });
 
 app.get('/coverflow', (req, res) => {
-	res.render('coverflow.ejs');
+	pool.getConnection((err, connection) => {
+
+		if (err) {
+			console.log(err);
+			res.send(err);
+		}
+
+		var query = "SELECT * FROM Client";
+		
+		connection.query(query, (err, rows) => {
+			
+			var clientsObj = {
+				'clients': rows
+			}
+	
+			res.render('coverflow.ejs', clientsObj);
+		});
+
+		
+	});
 });
 
 app.get('/clients/:id', (req, res) => {
