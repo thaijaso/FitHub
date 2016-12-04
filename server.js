@@ -8,6 +8,9 @@ const server = require('http').Server(app);
 const mysql = require('mysql');
 const session = require('express-session');
 const async = require('async');
+const multer = require('multer');
+const upload = multer({dest: 'public/img/'});
+const fs = require('fs');
 
 //setup heroku database
 const pool = mysql.createPool({
@@ -30,6 +33,7 @@ app.use('/js/pages', express.static(__dirname + '/js/pages'));
 app.use('/img', express.static(__dirname + '/public/img'));
 app.use('/fonts', express.static(__dirname + '/public/fonts'));
 app.use('/public', express.static(__dirname + '/public'));
+
 
 //serve static css, image, and js files from admin template 
 app.use('/plugins/iCheck/flat/', express.static(__dirname + '/plugins/iCheck/flat/'));
@@ -56,6 +60,13 @@ app.use('/js', express.static(__dirname + '/node_modules/jquery/dist'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+app.use(session({
+	secret: 'keyboard cat',
+    cookie: { maxAge: 86400000 }, //24hrs
+    resave: false,
+    saveUninitialized: false
+}));
+
 server.listen(app.get('port'), function() {
 	console.log('listening on port:', app.get('port'));
 });
@@ -74,29 +85,20 @@ app.post('/login', (req, res) => {
 	//check if trainer is logging in
 	if (username == trainerUsername && password == trainerPassword) {
 
-		var query = "SELECT * FROM Client";
+		req.session.isTrainer = true;
+		
+		req.session.user = {
+			id: 0,
+			firstName: 'Trainer',
+			lastName: '',
+			profileImgPath: 'img/ash.png'
+		};
 
-		pool.getConnection((err, connection) => {
-			if (err) {
-				console.log(err);
-				res.send(err);
-			}
+		res.redirect('/coverflow');
 
-			connection.query(query, (err, rows) => {
-				if (err) {
-					console.log(err);
-					res.send(err);
-				}
-
-				var clientsObj = {
-					'clients': rows
-				}
-	
-				res.render('coverflow.ejs', clientsObj);
-				connection.release();
-			});
-		});
 	} else {
+
+		req.session.isTrainer = false;
 
 		var query = "SELECT * FROM Client "+
 					"WHERE username = " + "'" + username + "'" + " AND " + "password = " + "'" + password + "'";
@@ -114,10 +116,23 @@ app.post('/login', (req, res) => {
 				}
 
 				if (rows.length) {
+					//set session
+					console.log('setting session for user: ' + rows[0].id);
+					
+					req.session.user = {
+						id: rows[0].id,
+						firstName: rows[0].firstName,
+						lastName: rows[0].lastName,
+						profileImgPath: rows[0].profileImgPath
+					}
+
+					console.log(req.session.user);
+					
 					res.redirect('/dashboard');
 				} else {
 					res.send('cant find user');
 				}
+				connection.release();
 			});
 		});	
 	}
@@ -151,6 +166,14 @@ app.post('/register', (req, res) => {
 
 			var userId = rows.insertId;
 
+			//set session
+			req.session.user = {
+				id: userId,
+				firstName: first,
+				lastName: last,
+				profileImgPath: 'img/avatar5.png'
+			};
+
 			var nutritionQuery = "INSERT INTO ClientNutrition (clientId, maxCalories, minWater, " +
 																"maxProtein, maxFats, maxCarbs) " +
 									"VALUES (" + userId + ", 2000, 64, 56, 78, 325)";
@@ -161,15 +184,20 @@ app.post('/register', (req, res) => {
 					res.send(err);
 				}
 
-				console.log(rows);
 				res.redirect('/dashboard');
+				connection.release();
 			});
 		});
 	}); 
 });
 
 app.get('/dashboard', (req, res) => {
-	res.render('dashboard.ejs');
+	console.log(req.session.user);
+	var data = {
+		user: req.session.user
+	};
+	
+	res.render('dashboard.ejs', data);
 });
 
 app.get('/food', (req, res) => {
@@ -192,17 +220,67 @@ app.get('/coverflow', (req, res) => {
 		
 		connection.query(query, (err, rows) => {
 			
-			var clientsObj = {
-				'clients': rows
+			
+			var data = {
+				user: req.session.user,
+				clients: rows
 			}
-	
-			res.render('coverflow.ejs', clientsObj);
+
+			res.render('coverflow.ejs', data);
 			connection.release();
 		});
 	});
 });
 
-app.get('/clients/:id', (req, res) => {
+app.get('/client/:id', (req, res) => {
 	console.log(req.params);
 	res.render('client.ejs');
+});
+
+app.post('/upload-photo', upload.single('avatar'), function(req, res)  {
+	console.log(req.file);
+	var tempPath = req.file.path;
+	var targetPath = 'public/img/' + req.file.originalname;
+
+	var src = fs.createReadStream(tempPath);
+	var dest = fs.createWriteStream(targetPath);
+	src.pipe(dest);
+	
+	src.on('end', function() {
+		pool.getConnection(function(err, connection) {
+			if (err) {
+				console.log(err);
+				res.send(err);
+			}
+
+			var filePath = 'img/' + req.file.originalname;
+			var clientId = req.body.clientId;
+
+			var query = connection.query("UPDATE Client SET profileImgPath = ? WHERE id = ?", [filePath, clientId], function(err, rows) {
+				if (err) {
+					console.log(err);
+					res.send(err);
+				}
+
+				req.session.user.profileImgPath = filePath;
+
+				if (req.session.isTrainer) {
+					res.redirect('/coverflow');
+				} else {
+					res.redirect('/dashboard');
+				}
+				connection.release();
+			});
+			console.log(query.sql);	
+		});
+	});
+
+	src.on('error', function(err) {
+		res.send('error');
+	});
+});
+
+app.get('/logout', function(req, res) {
+	req.session.destroy();
+	res.redirect('/');
 });

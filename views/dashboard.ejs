@@ -30,6 +30,36 @@
 
 <body class="hold-transition skin-blue sidebar-mini">
     <div class="wrapper">
+        <!-- start modal -->
+        <div class="modal modal-wide fade" id="shortModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title" id="exampleModalLabel" style="font-size: 24px;"><b>Upload Photo</b></h4>
+                    </div>
+                    <div class="modal-body">
+                        <form action="/upload-photo" role="form" method="post" enctype="multipart/form-data">
+                            <div class="box-body">
+                                <div class="form-group">
+                                    <label for="exampleInputFile">File input</label>
+                                    <input type="file" id="inputFile" name="avatar">
+                                    <p class="help-block">Import image from disk</p>
+                                    <input type="hidden" name="clientId" value="<%= user.id %>">
+                                </div>
+                            </div>
+                            <!-- /.box-body -->
+                            <div class="box-footer">
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- end modal -->
         <header class="main-header">
             <!-- Logo -->
             <a href="/dashboard" class="logo">
@@ -47,25 +77,30 @@
                         <!-- User Account: style can be found in dropdown.less -->
                         <li class="dropdown user user-menu">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                <img src="/img/user-icon1.svg" class="user-image" alt="User Image">
-                                <span class="hidden-xs">Jason Thai</span>
+                                <img src="<%= user.profileImgPath %>" class="user-image" alt="User Image">
+                                <span class="hidden-xs"><%= user.firstName %> <%= user.lastName %></span>
                             </a>
                             <ul class="dropdown-menu">
                                 <!-- User image -->
                                 <li class="user-header">
-                                <img src="/img/user-icon1.svg" class="user-image" alt="User Image">
+                                <img src="<%= user.profileImgPath %>" class="user-image" alt="User Image">
                                     <p>
-                                        Jason Thai - Client
+                                        <%= user.firstName %> <%= user.lastName %> - Client
                                         <small>Member since Nov. 2012</small>
                                     </p>
                                 </li>
                                 <!-- Menu Footer-->
                                 <li class="user-footer">
-                                    <div class="pull-left">
-                                        <a href="#" class="btn btn-default btn-flat">Profile</a>
-                                    </div>
-                                    <div class="pull-right">
-                                        <a href="#" class="btn btn-default btn-flat">Sign out</a>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <a href="#" class="btn btn-default btn-flat">Profile</a>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <a id="uploadBut" href="#" class="btn btn-default btn-flat">Upload</a>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <a href="/logout" class="btn btn-default btn-flat">Sign out</a>
+                                        </div>
                                     </div>
                                 </li>
                             </ul>
@@ -85,10 +120,10 @@
                 <!-- Sidebar user panel -->
                 <div class="user-panel">
                     <div class="pull-left image">
-                         <img src="/img/avatar.png" class="user-image" alt="User Image">
+                         <img src="<%= user.profileImgPath %>" class="user-image" alt="User Image">
                     </div>
                     <div class="pull-left info">
-                        <p>Jason Thai</p>
+                        <p><%= user.firstName %> <%= user.lastName %></p>
                         <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
                     </div>
                 </div>
@@ -707,6 +742,15 @@
     barChartOptions.datasetFill = false;
     barChart.Bar(barChartData, barChartOptions);
 });
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            $("#uploadBut").click(function() {
+                $("#shortModal").modal('show');
+            });
+            
+        });
     </script>
 </body>
 
