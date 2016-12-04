@@ -97,11 +97,7 @@ app.post('/login', (req, res) => {
 		res.redirect('/coverflow');
 
 	} else {
-
 		req.session.isTrainer = false;
-
-		var query = "SELECT * FROM Client "+
-					"WHERE username = " + "'" + username + "'" + " AND " + "password = " + "'" + password + "'";
 
 		pool.getConnection((err, connection) => {
 			if (err) {
@@ -109,7 +105,9 @@ app.post('/login', (req, res) => {
 				res.send(err);
 			}
 
-			connection.query(query, (err, rows) => {
+			var queryObj = connection.query("SELECT * FROM Client WHERE username = ? AND password = ?", 
+			[username, password], (err, rows) => {
+				
 				if (err) {
 					console.log(err);
 					res.send(err);
@@ -134,6 +132,7 @@ app.post('/login', (req, res) => {
 				}
 				connection.release();
 			});
+			console.log(queryObj.sql);
 		});	
     } 
 });
@@ -149,8 +148,7 @@ app.post('/register', (req, res) => {
 	var password = req.body.password;
 
 	var registerQuery = "INSERT INTO Client (username, password, firstName, lastName, dateJoined) " +
-				"VALUES (" + "'" + username + "'" + ", " + "'" + password + "'" + ", " + 
-				"'" + first + "'" + ", " + "'" + last + "'" + ", " + "NOW()" + ")"; 
+						"VALUES (?, ?, ?, ?, ?)";
 
 	pool.getConnection((err, connection) => {
 		if (err) {
@@ -158,7 +156,7 @@ app.post('/register', (req, res) => {
 			res.send(err);
 		}
 
-		connection.query(registerQuery, (err, rows) => {
+		var registerQueryObj = connection.query(registerQuery, [username, password, first, last, "NOW()"], (err, rows) => {
 			if (err) {
 				console.log(err);
 				res.send(err);
@@ -176,9 +174,9 @@ app.post('/register', (req, res) => {
 
 			var nutritionQuery = "INSERT INTO ClientNutrition (clientId, maxCalories, minWater, " +
 																"maxProtein, maxFats, maxCarbs) " +
-									"VALUES (" + userId + ", 2000, 64, 56, 78, 325)";
+									"VALUES (?, 2000, 64, 56, 78, 325)";
 
-			connection.query(nutritionQuery, (err, rows) => {
+			var nutritionQueryObj = connection.query(nutritionQuery, [userId], (err, rows) => {
 				if (err) {
 					console.log(err);
 					res.send(err);
@@ -187,7 +185,9 @@ app.post('/register', (req, res) => {
 				res.redirect('/dashboard');
 				connection.release();
 			});
+			console.log(nutritionQueryObj.sql);
 		});
+		console.log(registerQueryObj.sql);
 	}); 
 });
 
@@ -202,10 +202,12 @@ app.get('/dashboard', (req, res) => {
 
 app.get('/food', (req, res) => {
     var food = "SELECT * FROM Food";
+    
     pool.getConnection((err, connection) => {
         if (err) {
             console.log(err);
         }
+        
         connection.query(food, (err, rows) => {
             if (err) {
                 console.log(err);
@@ -216,14 +218,9 @@ app.get('/food', (req, res) => {
                 }
                 res.render('food.ejs', data);
 
-
             }
-
-
         });
     });
-
-
 });
 
 app.get('/addFood', (req, res) => {
