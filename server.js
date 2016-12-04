@@ -148,7 +148,7 @@ app.post('/register', (req, res) => {
 	var password = req.body.password;
 
 	var registerQuery = "INSERT INTO Client (username, password, firstName, lastName, dateJoined) " +
-						"VALUES (?, ?, ?, ?, ?)";
+						"VALUES (?, ?, ?, ?, NOW())";
 
 	pool.getConnection((err, connection) => {
 		if (err) {
@@ -156,7 +156,7 @@ app.post('/register', (req, res) => {
 			res.send(err);
 		}
 
-		var registerQueryObj = connection.query(registerQuery, [username, password, first, last, "NOW()"], (err, rows) => {
+		var registerQueryObj = connection.query(registerQuery, [username, password, first, last], (err, rows) => {
 			if (err) {
 				console.log(err);
 				res.send(err);
@@ -241,23 +241,12 @@ app.post('/addFood', (req, res) => {
     var type = req.body.type;
     var servingSize = req.body.servingSize;
 
-    console.log(name);
-    console.log(description);
-    console.log(cals);
-    console.log(fat);
-    console.log(protein);
-    console.log(carbs);
-    console.log(category);
-    console.log(type);
-
     var query = 'INSERT INTO Food (foodName, description, category, calories, fat, protein, carbs, foodType, servingSize) ' +
-        'VALUES(' + "'" + name + "'" + "," + "'" + description + "'" + "," + "'" + category + "'" + "," + cals + "," + fat + "," + protein + "," + carbs + "," + "'" + type + "'" + "," +
-        "'" + servingSize + "'" + ')';
+    			'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
 
-    console.log(query);
     pool.getConnection((err, connection) => {
 
-        connection.query(query, (err, rows) => {
+        var queryObj = connection.query(query, [name, description, cals, fat, protein, carbs, category, type, servingSize], (err, rows) => {
             if (err) {
                 console.log(err);
             } else {
@@ -265,13 +254,9 @@ app.post('/addFood', (req, res) => {
 
                 res.redirect("/food");
             }
-
         });
-
+        console.log(queryObj.sql);
     });
-
-
-
 });
 
 app.get('/editFood', (req, res) => {
@@ -279,9 +264,6 @@ app.get('/editFood', (req, res) => {
 });
 
 app.post('/editFood', (req, res) => {
-
-	console.dir(req.body);
-
 	var id = req.body.id;
     var name = req.body.name;
     var description = req.body.description;
@@ -293,18 +275,9 @@ app.post('/editFood', (req, res) => {
     var type = req.body.type;
     var servingSize = req.body.servingSize;
 
-
-    // console.log(id);
-
-
-
-    var query = 'UPDATE Food SET foodName=' + "'" + name + "'" + ", description = " + "'" + description + "'" + ", category=" + "'" + category 
-  					  + "'" + ",calories=" + cals + ", fat=" + fat + ", protein=" + protein + ",carbs=" + carbs + ",foodType=" + "'" + type + "'" +
-    				 ", servingSize=" + "'" + servingSize + "'" 
-    		    +" WHERE id=" + id;
-
-    console.log(query);
-
+    var query = 'UPDATE Food SET foodName = ?, description = ?, category = ?, calories = ?, fat = ?, protein = ?, ' +
+    				'carbs = ?, foodType = ?, servingSize = ? ' +
+    			'WHERE id = ?';
 
     pool.getConnection((err, connection) => {
 
@@ -313,7 +286,7 @@ app.post('/editFood', (req, res) => {
             res.send(err);
         }
 
-        connection.query(query, (err,rows) => {
+        var queryObj = connection.query(query, [name, description, category, cals, fat, protein, carbs, type, servingSize, id], (err,rows) => {
 
         	if(err) {
         		console.log(err);
@@ -321,13 +294,12 @@ app.post('/editFood', (req, res) => {
         		console.log("Food was edited!");
         		res.redirect('/food');
         	}
-
         });
-
-
+        console.log(queryObj.sql);
     });
 
 });
+
 app.get('/diary', (req, res) => {
     res.render('diary.ejs');
 });
