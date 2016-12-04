@@ -163,152 +163,68 @@
                                         <!-- <legend>Add a Graduate</legend> -->
                                         <!-- Text input-->
                                         <div class="form-group">
-                                            <label class="col-md-4 control-label" for="studentId">Student Id</label>
+                                            <label class="col-md-4 control-label" for="name">Name</label>
                                             <div class="col-md-6">
-                                                <input id="studentId" name="studentId" type="text" placeholder="1234567" class="form-control input-md" required=""><span id="errmsg"></span>
+                                                <input id="name" name="name" type="text" placeholder="McGriddle" class="form-control input-md" required=""><span id="errmsg"></span>
                                             </div>
                                         </div>
                                         <!-- Text input-->
                                         <div class="form-group">
-                                            <label class="col-md-4 control-label" for="studentLastName">Last Name</label>
+                                            <label class="col-md-4 control-label" for="description">Description</label>
                                             <div class="col-md-6">
-                                                <input id="studentLastName" name="lastName" type="text" placeholder="Doe" class="form-control input-md" required="">
-                                            </div>
-                                        </div>
-                                        <!-- Text input-->
-                                        <div class="form-group">
-                                            <label class="col-md-4 control-label" for="firstName">First Name</label>
-                                            <div class="col-md-6">
-                                                <input id="studentFirstName" name="firstName" type="text" placeholder="Jane" class="form-control input-md" required="">
-                                            </div>
-                                        </div>
-                                        <!-- Text input-->
-                                        <div class="form-group">
-                                            <label class="col-md-4 control-label" for="email">Email</label>
-                                            <div class="col-md-6">
-                                                <input id="studentEmail" name="email" type="text" placeholder="email@example.com" class="form-control input-md">
+                                                <input id="description" name="description" type="text" placeholder="Doe" class="form-control input-md" required="">
                                             </div>
                                         </div>
                                         <!-- Appended Input-->
                                         <div class="form-group">
-                                            <label class="col-md-4 control-label" for="studentEmail">UW Email</label>
+                                            <label class="col-md-4 control-label" for="calories">Calories</label>
                                             <div class="col-md-6">
                                                 <div class="input-group">
-                                                    <input id="studentUWEmail" name="UWemail" class="form-control" placeholder="uw net id" type="text" required="">
-                                                    <span class="input-group-addon">@uw.edu</span>
+                                                    <input id="calories" name="calories" class="form-control" type="text" required="">
+                                                    <span class="input-group-addon">calories</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- Appended Input-->
+                                        <div class="form-group">
+                                            <label class="col-md-4 control-label" for="fat">Fat</label>
+                                            <div class="col-md-6">
+                                                <div class="input-group">
+                                                    <input id="fat" name="fat" class="form-control" type="text" required="">
+                                                    <span class="input-group-addon">grams</span>
                                                 </div>
                                             </div>
                                         </div>
                                         <!-- Text input-->
                                         <div class="form-group">
-                                            <label class="col-md-4 control-label" for="studentGPA">GPA</label>
+                                            <label class="col-md-4 control-label" for="protein">Protein</label>
                                             <div class="col-md-6">
-                                                <input id="studentGPA" name="gpa" type="text" placeholder="3.0" class="form-control input-md" required=""> <span id="errmsg"></span>
-                                            </div>
-                                        </div>
-                                        <!-- Text input-->
-                                        <div class="form-group">
-                                            <label class="col-md-4 control-label" for="studentGradYear">Grad Year</label>
-                                            <div class="col-md-6">
-                                                <input id="studentGradYear" name="gradYear" type="text" placeholder="YYYY" class="form-control input-md" required=""><span id="errmsg"></span>
-                                            </div>
-                                        </div>
-                                        <!-- Button Drop Down -->
-                                        <div class="form-group">
-                                            <label class="col-md-4 control-label" for="studentGender">Gender</label>
-                                            <div class="col-md-6">
-                                                <select class="form-control" name="gender" id="studentGender" required="">
-                                                    <option>Male</option>
-                                                    <option>Female</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="col-md-4 control-label" for="studentAge">Age</label>
-                                            <div class="col-md-6">
-                                                <select class="form-control" name="age" id="studentAge" required="">
-                                                    <option>
-                                                        <18 </option>
-                                                            <option>18-23</option>
-                                                            <option>24-29</option>
-                                                            <option>30-39</option>
-                                                            <option>40-49</option>
-                                                            <option>50-59</option>
-                                                            <option>60+</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="col-md-4 control-label" for="studentGen">Generation</label>
-                                            <div class="col-md-6">
-                                                <select class="form-control" name="generation" id="studentGen">
-                                                    <option value="null" selected> </option>
-                                                    <option>1st</option>
-                                                    <option>2nd</option>
-                                                    <option>Parent(s) Alumni</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="col-md-4 control-label" for="studentGen">Ethnicity</label>
-                                            <div class="col-md-6">
-                                                <select class="form-control" name="ethnicity" id="studentEthnicity" required="">
-                                                    <option>Hispanic/Latino</option>
-                                                    <option>Asian</option>
-                                                    <option>Pacific Islander</option>
-                                                    <option>Caucasian/White</option>
-                                                    <option>African/Black</option>
-                                                    <option>Native American</option>
-                                                    <option>Other</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="col-md-4 control-label" for="studentGradTerm">Grad Term</label>
-                                            <div class="col-md-6">
-                                                <select class="form-control" name="gradTerm" id="studentGradTerm" required="">
-                                                    <option>AUT</option>
-                                                    <option>WIN</option>
-                                                    <option>SPR</option>
-                                                    <option>SUM</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="col-md-4 control-label" for="studentProgram">Program</label>
-                                            <div class="col-md-6">
-                                                <select class="form-control" name="program" id="studentProgram" required="">
-                                                    <option>CSS</option>
-                                                    <option>CES</option>
-                                                    <option>IT</option>
-                                                    <option>EE</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="col-md-4 control-label" for="studentDegree">Degree</label>
-                                            <div class="col-md-6">
-                                                <select class="form-control" name="degree" id="studentDegree" required="">
-                                                    <option>BS</option>
-                                                    <option>BA</option>
-                                                    <option>MS</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <!-- Multiple Radios -->
-                                        <div class="form-group">
-                                            <label class="col-md-4 control-label" for="radios">Contact</label>
-                                            <div class="col-md-4">
-                                                <div class="radio">
-                                                    <label for="radios-0">
-                                                        <input type="radio" name="radios" id="radios-0" value="1" checked="checked"> Yes
-                                                    </label>
+                                                <div class="input-group">
+                                                    <input id="protein" name="protein" class="form-control" type="text" required="">
+                                                    <span class="input-group-addon">grams</span>
                                                 </div>
-                                                <div class="radio">
-                                                    <label for="radios-1">
-                                                        <input type="radio" name="radios" id="radios-1" value="0"> No
-                                                    </label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-4 control-label" for="carbs">Carbohydrates</label>
+                                            <div class="col-md-6">
+                                                <div class="input-group">
+                                                    <input id="carbs" name="carbs" class="form-control" type="text" required="">
+                                                    <span class="input-group-addon">grams</span>
                                                 </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-4 control-label" for="category">Category</label>
+                                            <div class="col-md-6">
+                                                <select class="form-control" name="category" id="category" required="">
+                                                    <option>Combo</option>
+                                                    <option>Vegetables</option>
+                                                    <option>Fruit</option>
+                                                    <option>Dairy</option>
+                                                    <option>Protein</option>
+                                                    <option>Sweets</option>
+                                                </select>
                                             </div>
                                         </div>
                                         <!-- Button (Double) -->
@@ -361,16 +277,13 @@
                                                 <td>
                                                     <div id="actionBtns">
                                                         <a href="#" class="btn btn-success btn-xs">
-                                                            <i class="fa fa-paper-plane" aria-hidden="true"></i> 
-                                                        Eat
+                                                            <i class="fa fa-paper-plane" aria-hidden="true"></i> Eat
                                                         </a>
                                                         <a href="#" class="btn btn-info btn-xs">
-                                                            <i class="fa fa-paper-plane" aria-hidden="true"></i> 
-                                                        Edit
+                                                            <i class="fa fa-paper-plane" aria-hidden="true"></i> Edit
                                                         </a>
                                                         <a href="#" class="btn btn-danger btn-xs">
-                                                            <span class="glyphicon glyphicon-trash" id="deleteBtn" class="deleteClass"></span> 
-                                                            Del
+                                                            <span class="glyphicon glyphicon-trash" id="deleteBtn" class="deleteClass"></span> Del
                                                         </a>
                                                     </div>
                                                 </td>
@@ -383,7 +296,7 @@
                                                 <td></td>
                                                 <td></td>
                                                 <td></td>
-                                             </tr>   
+                                            </tr>
                                         </div>
                                     </tbody>
                                 </table>
