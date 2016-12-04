@@ -142,12 +142,12 @@
             <!-- Content Header (Page header) -->
             <section class="content-header">
                 <h1>Food
-                                    <a href="#" id="addGradBtn" class="btn btn-primary " style="margin-right: 5px;">
+                                    <a href="#" id="addFoodMain" class="btn btn-primary " style="margin-right: 5px;">
                                             <i class="fa fa-plus-square" style="margin-right: 5px;"></i>  
                                             Add Food
                                     </a>
                                 </h1>
-                <div class="modal modal-wide fade" id="addGradModal" id="shortModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal modal-wide fade" id="addFoodModal" id="shortModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
@@ -157,7 +157,7 @@
                                 <h4 class="modal-title" id="exampleModalLabel" style="font-size: 24px;"><b>Add Food</b></h4>
                             </div>
                             <div class="modal-body">
-                                <form class="form-horizontal" id="addGradForm" action="/addGrad" method="post">
+                                <form class="form-horizontal" id="addFoodFrm" action="/addFood" method="post">
                                     <fieldset>
                                         <!-- Form Name -->
                                         <!-- <legend>Add a Graduate</legend> -->
@@ -172,7 +172,7 @@
                                         <div class="form-group">
                                             <label class="col-md-4 control-label" for="description">Description</label>
                                             <div class="col-md-6">
-                                                <input id="description" name="description" type="text" placeholder="Doe" class="form-control input-md" required="">
+                                                <textarea rows="4" cols="50" id="description" name="description" type="text" class="form-control input-md" required=""></textarea>
                                             </div>
                                         </div>
                                         <!-- Appended Input-->
@@ -183,6 +183,12 @@
                                                     <input id="calories" name="calories" class="form-control" type="text" required="">
                                                     <span class="input-group-addon">calories</span>
                                                 </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-4 control-label" for="servingSize">Serving Size</label>
+                                            <div class="col-md-6">
+                                                <input id="servingSize" name="servingSize" class="form-control" placeholder="e.g 1 burger, or 3 oz" type="text" required="">
                                             </div>
                                         </div>
                                         <!-- Appended Input-->
@@ -223,7 +229,19 @@
                                                     <option>Fruit</option>
                                                     <option>Dairy</option>
                                                     <option>Protein</option>
+                                                    <option>Carbohydrates</option>
                                                     <option>Sweets</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-4 control-label" for="type">Food Type</label>
+                                            <div class="col-md-6">
+                                                <select class="form-control" name="type" id="type" required="">
+                                                    <option>Fast Food</option>
+                                                    <option>Take Out</option>
+                                                    <option>Homemade</option>
+                                                    <option>Raw Food</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -232,7 +250,7 @@
                                             <label class="col-md-4 control-label" for="button1id"></label>
                                             <div class="col-md-8">
                                                 <button id="button1id" name="button1id" class="btn btn-secondary">Close</button>
-                                                <button id="button2id" name="button2id" class="btn btn-primary" id="addGradToDataBtn" form="addGradForm">Add</button>
+                                                <button id="button2id" name="button2id" class="btn btn-primary" id="addFoodBtn" form="addFoodFrm">Add</button>
                                             </div>
                                         </div>
                                     </fieldset>
@@ -244,8 +262,8 @@
                 <!-- end modal -->
                 </h1>
                 <ol class="breadcrumb">
-                    <li><a href="/graduates"><i class="fa fa-th"></i> Graduates</a></li>
-                    <li class="active">Student Info</li>
+                    <li><a href="/graduates"><i class="fa fa-th"></i> Food</a></li>
+                    <li class="active">Food Info</li>
                 </ol>
             </section>
             <!-- Main content -->
@@ -265,6 +283,8 @@
                                             <th>Name</th>
                                             <th>Description</th>
                                             <th>Category</th>
+                                            <th>Food Type</th>
+                                            <th>Serving Size</th>
                                             <th>Calories</th>
                                             <th>Fat</th>
                                             <th>Protein</th>
@@ -272,31 +292,54 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <div action="post" method="/addGrad" class="gradIdTbl">
-                                            <tr data-child-value="">
-                                                <td>
-                                                    <div id="actionBtns">
-                                                        <a href="#" class="btn btn-success btn-xs">
-                                                            <i class="fa fa-paper-plane" aria-hidden="true"></i> Eat
-                                                        </a>
-                                                        <a href="#" class="btn btn-info btn-xs">
-                                                            <i class="fa fa-paper-plane" aria-hidden="true"></i> Edit
-                                                        </a>
-                                                        <a href="#" class="btn btn-danger btn-xs">
-                                                            <span class="glyphicon glyphicon-trash" id="deleteBtn" class="deleteClass"></span> Del
-                                                        </a>
-                                                    </div>
-                                                </td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                            </tr>
+                                        <div action="post" method="/addFood" class="gradIdTbl">
+                                            <% for (var i = 0; i < food.length; i++) { %>
+                                                <tr>
+                                                    <td>
+                                                        <div id="actionBtns">
+                                                            <a href="#" class="btn btn-success btn-xs">
+                                                                <i class="fa fa-cutlery" aria-hidden="true"></i> Eat
+                                                            </a>
+                                                            <a href="#" class="btn btn-info btn-xs">
+                                                                <i class="fa fa-edit" aria-hidden="true"></i> Edit
+                                                            </a>
+                                                            <a href="#" class="btn btn-danger btn-xs">
+                                                                <span class="glyphicon glyphicon-trash" id="deleteBtn" class="deleteClass"></span> Del
+                                                            </a>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <%=food[i].id%>
+                                                    </td>
+                                                    <td>
+                                                        <%=food[i].foodName%>
+                                                    </td>
+                                                    <td>
+                                                        <%=food[i].description%>
+                                                    </td>
+                                                    <td>
+                                                        <%=food[i].category%>
+                                                    </td>
+                                                    <td>
+                                                        <%=food[i].foodType%>
+                                                    </td>
+                                                    <td>
+                                                        <%=food[i].servingSize%>
+                                                    </td>
+                                                    <td>
+                                                        <%=food[i].calories%>
+                                                    </td>
+                                                    <td>
+                                                        <%=food[i].fat%>
+                                                    </td>
+                                                    <td>
+                                                        <%=food[i].protein%>
+                                                    </td>
+                                                    <td>
+                                                        <%=food[i].carbs%>
+                                                    </td>
+                                                </tr>
+                                                <% } %>
                                         </div>
                                     </tbody>
                                 </table>
@@ -313,7 +356,7 @@
         </div>
         <!-- /.content-wrapper -->
         <!-- start edit modal -->
-        <div class="modal fade" id="editGradModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal fade" id="editFoodModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -323,166 +366,105 @@
                         <h4 class="modal-title" id="exampleModalLabel" style="font-size: 24px;"><b>Edit a Graduate</b></h4>
                     </div>
                     <div class="modal-body">
-                        <form class="form-horizontal" id="editGradForm" action="/editGrad" method="post">
+                        <form class="form-horizontal" id="editFoodFrm" action="/editFood" method="post">
                             <fieldset>
                                 <!-- Form Name -->
                                 <!-- <legend>Add a Graduate</legend> -->
                                 <!-- Text input-->
                                 <div class="form-group">
-                                    <!-- <label class="col-md-4 control-label" for="studentId">Student Id</label> -->
                                     <div class="col-md-6">
-                                        <input id="studentIdEdit" type="hidden" name="studentId" type="text" placeholder="1234567" class="form-control input-md" required=""><span id="errmsg"></span>
+                                        <input id="idE" name="id" type="hidden" class="form-control input-md" required="">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-4 control-label" for="name">Name</label>
+                                    <div class="col-md-6">
+                                        <input id="nameE" name="name" type="text" placeholder="McGriddle" class="form-control input-md" required=""><span id="errmsg"></span>
                                     </div>
                                 </div>
                                 <!-- Text input-->
                                 <div class="form-group">
-                                    <label class="col-md-4 control-label" for="studentLastName">Last Name</label>
+                                    <label class="col-md-4 control-label" for="description">Description</label>
                                     <div class="col-md-6">
-                                        <input id="studentLastNameEdit" name="lastName" type="text" placeholder="Doe" class="form-control input-md" required="">
-                                    </div>
-                                </div>
-                                <!-- Text input-->
-                                <div class="form-group">
-                                    <label class="col-md-4 control-label" for="firstName">First Name</label>
-                                    <div class="col-md-6">
-                                        <input id="studentFirstNameEdit" name="firstName" type="text" placeholder="Jane" class="form-control input-md" required="">
-                                    </div>
-                                </div>
-                                <!-- Text input-->
-                                <div class="form-group">
-                                    <label class="col-md-4 control-label" for="studentEmail">Email</label>
-                                    <div class="col-md-6">
-                                        <input id="studentEmailEdit" name="email" type="text" placeholder="email@example.com" class="form-control input-md">
+                                        <textarea rows="4" cols="50" id="descriptionE" name="description" type="text" class="form-control input-md" required=""></textarea>
                                     </div>
                                 </div>
                                 <!-- Appended Input-->
                                 <div class="form-group">
-                                    <label class="col-md-4 control-label" for="studentUWEmail">UW Email</label>
-                                    <div class="col-md-7">
+                                    <label class="col-md-4 control-label" for="calories">Calories</label>
+                                    <div class="col-md-6">
                                         <div class="input-group">
-                                            <input id="studentUWEmailEdit" name="UWemail" class="form-control input-md" placeholder="uw net id" type="text" required="">
-                                            <span class="input-group-addon">@uw.edu</span>
+                                            <input id="caloriesE" name="calories" class="form-control" type="text" required="">
+                                            <span class="input-group-addon">calories</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-4 control-label" for="servingSize">Serving Size</label>
+                                    <div class="col-md-6">
+                                        <input id="servingSizeE" name="servingSize" class="form-control" placeholder="e.g 1 burger, or 3 oz" type="text" required="">
+                                    </div>
+                                </div>
+                                <!-- Appended Input-->
+                                <div class="form-group">
+                                    <label class="col-md-4 control-label" for="fat">Fat</label>
+                                    <div class="col-md-6">
+                                        <div class="input-group">
+                                            <input id="fatE" name="fat" class="form-control" type="text" required="">
+                                            <span class="input-group-addon">grams</span>
                                         </div>
                                     </div>
                                 </div>
                                 <!-- Text input-->
                                 <div class="form-group">
-                                    <label class="col-md-4 control-label" for="studentGPA">GPA</label>
+                                    <label class="col-md-4 control-label" for="protein">Protein</label>
                                     <div class="col-md-6">
-                                        <input id="studentGPAEdit" name="gpa" type="text" placeholder="3.0" class="form-control input-md" required=""> <span id="errmsg"></span>
-                                    </div>
-                                </div>
-                                <!-- Text input-->
-                                <div class="form-group">
-                                    <label class="col-md-4 control-label" for="studentGradYear">Grad Year</label>
-                                    <div class="col-md-6">
-                                        <input id="studentGradYearEdit" name="gradYear" type="text" placeholder="YYYY" class="form-control input-md" required=""><span id="errmsg"></span>
-                                    </div>
-                                </div>
-                                <!-- Button Drop Down -->
-                                <div class="form-group">
-                                    <label class="col-md-4 control-label" for="studentGender">Gender</label>
-                                    <div class="col-md-6">
-                                        <select class="form-control" name="gender" id="studentGenderEdit" required="">
-                                            <option>Male</option>
-                                            <option>Female</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-md-4 control-label" for="studentAge">Age</label>
-                                    <div class="col-md-6">
-                                        <select class="form-control" name="age" id="studentAgeEdit" required="">
-                                            <option>
-                                                <18 </option>
-                                                    <option>18-23</option>
-                                                    <option>24-29</option>
-                                                    <option>30-39</option>
-                                                    <option>40-49</option>
-                                                    <option>50-59</option>
-                                                    <option>60+</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-md-4 control-label" for="studentGen">Generation</label>
-                                    <div class="col-md-6">
-                                        <select class="form-control" name="generation" id="studentGenEdit">
-                                            <option value="null" selected> </option>
-                                            <option>1st</option>
-                                            <option>2nd</option>
-                                            <option>Parent(s) Alumni</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-md-4 control-label" for="studentGen">Ethnicity</label>
-                                    <div class="col-md-6">
-                                        <select class="form-control" name="ethnicity" id="studentEthnicityEdit" required="">
-                                            <option>Hispanic/Latino</option>
-                                            <option>Asian</option>
-                                            <option>Pacific Islander</option>
-                                            <option>Caucasian/White</option>
-                                            <option>African/Black</option>
-                                            <option>Native American</option>
-                                            <option>Other</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-md-4 control-label" for="studentGradTerm">Grad Term</label>
-                                    <div class="col-md-6">
-                                        <select class="form-control" name="gradTerm" id="studentGradTermEdit" required="">
-                                            <option>AUT</option>
-                                            <option>WIN</option>
-                                            <option>SPR</option>
-                                            <option>SUM</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-md-4 control-label" for="studentProgram">Program</label>
-                                    <div class="col-md-6">
-                                        <select class="form-control" name="program" id="studentProgramEdit" required="">
-                                            <option>CSS</option>
-                                            <option>CES</option>
-                                            <option>IT</option>
-                                            <option>EE</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-md-4 control-label" for="studentDegree">Degree</label>
-                                    <div class="col-md-6">
-                                        <select class="form-control" name="degree" id="studentDegreeEdit" required="">
-                                            <option>BS</option>
-                                            <option>BA</option>
-                                            <option>MS</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <!-- Multiple Radios -->
-                                <div class="form-group">
-                                    <label class="col-md-4 control-label" for="radios">Contact</label>
-                                    <div class="col-md-4">
-                                        <div class="radio">
-                                            <label for="radios-0">
-                                                <input type="radio" name="radios" id="radios-0" value="1" checked="checked"> Yes
-                                            </label>
+                                        <div class="input-group">
+                                            <input id="proteinE" name="protein" class="form-control" type="text" required="">
+                                            <span class="input-group-addon">grams</span>
                                         </div>
-                                        <div class="radio">
-                                            <label for="radios-1">
-                                                <input type="radio" name="radios" id="radios-1" value="0"> No
-                                            </label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-4 control-label" for="carbs">Carbohydrates</label>
+                                    <div class="col-md-6">
+                                        <div class="input-group">
+                                            <input id="carbsE" name="carbs" class="form-control" type="text" required="">
+                                            <span class="input-group-addon">grams</span>
                                         </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-4 control-label" for="category">Category</label>
+                                    <div class="col-md-6">
+                                        <select class="form-control" name="category" id="categoryE" required="">
+                                            <option>Combo</option>
+                                            <option>Vegetables</option>
+                                            <option>Fruit</option>
+                                            <option>Dairy</option>
+                                            <option>Protein</option>
+                                            <option>Carbohydrates</option>
+                                            <option>Sweets</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-4 control-label" for="type">Food Type</label>
+                                    <div class="col-md-6">
+                                        <select class="form-control" name="type" id="typeE" required="">
+                                            <option>Fast Food</option>
+                                            <option>Take Out</option>
+                                            <option>Homemade</option>
+                                            <option>Raw Food</option>
+                                        </select>
                                     </div>
                                 </div>
                                 <!-- Button (Double) -->
                                 <div class="form-group">
                                     <label class="col-md-4 control-label" for="button1id"></label>
                                     <div class="col-md-8">
-                                        <button id="button1id" name="button1id" class="btn btn-default">Close</button>
-                                        <button id="button2id" name="button2id" class="btn btn-info" id="editGradToDataBtn" form="editGradForm">Edit</button>
+                                        <button id="button1id" name="button1id" class="btn btn-secondary">Close</button>
+                                        <button id="button2id" name="button2id" class="btn btn-primary" id="editFoodBtn" form="editFoodFrm">Add</button>
                                     </div>
                                 </div>
                             </fieldset>
@@ -490,452 +472,428 @@
                     </div>
                 </div>
             </div>
-        </div>
-        <!-- end edit modal -->
-        <footer class="main-footer">
-            <div class="pull-right hidden-xs">
-                <b>Version</b> 2.3.8
-            </div>
-            <strong>Copyright &copy; 2014-2016 <a href="http://almsaeedstudio.com">Almsaeed Studio</a>.</strong> All rights reserved.
-        </footer>
-        <!-- Control Sidebar -->
-        <aside class="control-sidebar control-sidebar-dark">
-            <!-- Create the tabs -->
-            <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
-                <li><a href="#control-sidebar-home-tab" data-toggle="tab"><i class="fa fa-home"></i></a></li>
-                <li><a href="#control-sidebar-settings-tab" data-toggle="tab"><i class="fa fa-gears"></i></a></li>
-            </ul>
-            <!-- Tab panes -->
-            <div class="tab-content">
-                <!-- Home tab content -->
-                <div class="tab-pane" id="control-sidebar-home-tab">
-                    <h3 class="control-sidebar-heading">Recent Activity</h3>
-                    <ul class="control-sidebar-menu">
-                        <li>
-                            <a href="javascript:void(0)">
-                                <i class="menu-icon fa fa-birthday-cake bg-red"></i>
-                                <div class="menu-info">
-                                    <h4 class="control-sidebar-subheading">Langdon's Birthday</h4>
-                                    <p>Will be 23 on April 24th</p>
-                                </div>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="javascript:void(0)">
-                                <i class="menu-icon fa fa-user bg-yellow"></i>
-                                <div class="menu-info">
-                                    <h4 class="control-sidebar-subheading">Frodo Updated His Profile</h4>
-                                    <p>New phone +1(800)555-1234</p>
-                                </div>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="javascript:void(0)">
-                                <i class="menu-icon fa fa-envelope-o bg-light-blue"></i>
-                                <div class="menu-info">
-                                    <h4 class="control-sidebar-subheading">Nora Joined Mailing List</h4>
-                                    <p>nora@example.com</p>
-                                </div>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="javascript:void(0)">
-                                <i class="menu-icon fa fa-file-code-o bg-green"></i>
-                                <div class="menu-info">
-                                    <h4 class="control-sidebar-subheading">Cron Job 254 Executed</h4>
-                                    <p>Execution time 5 seconds</p>
-                                </div>
-                            </a>
-                        </li>
-                    </ul>
-                    <!-- /.control-sidebar-menu -->
-                    <h3 class="control-sidebar-heading">Tasks Progress</h3>
-                    <ul class="control-sidebar-menu">
-                        <li>
-                            <a href="javascript:void(0)">
-                                <h4 class="control-sidebar-subheading">
+            <aside class="control-sidebar control-sidebar-dark">
+                <!-- Create the tabs -->
+                <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
+                    <li><a href="#control-sidebar-home-tab" data-toggle="tab"><i class="fa fa-home"></i></a></li>
+                    <li><a href="#control-sidebar-settings-tab" data-toggle="tab"><i class="fa fa-gears"></i></a></li>
+                </ul>
+                <!-- Tab panes -->
+                <div class="tab-content">
+                    <!-- Home tab content -->
+                    <div class="tab-pane" id="control-sidebar-home-tab">
+                        <h3 class="control-sidebar-heading">Recent Activity</h3>
+                        <ul class="control-sidebar-menu">
+                            <li>
+                                <a href="javascript:void(0)">
+                                    <i class="menu-icon fa fa-birthday-cake bg-red"></i>
+                                    <div class="menu-info">
+                                        <h4 class="control-sidebar-subheading">Langdon's Birthday</h4>
+                                        <p>Will be 23 on April 24th</p>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0)">
+                                    <i class="menu-icon fa fa-user bg-yellow"></i>
+                                    <div class="menu-info">
+                                        <h4 class="control-sidebar-subheading">Frodo Updated His Profile</h4>
+                                        <p>New phone +1(800)555-1234</p>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0)">
+                                    <i class="menu-icon fa fa-envelope-o bg-light-blue"></i>
+                                    <div class="menu-info">
+                                        <h4 class="control-sidebar-subheading">Nora Joined Mailing List</h4>
+                                        <p>nora@example.com</p>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0)">
+                                    <i class="menu-icon fa fa-file-code-o bg-green"></i>
+                                    <div class="menu-info">
+                                        <h4 class="control-sidebar-subheading">Cron Job 254 Executed</h4>
+                                        <p>Execution time 5 seconds</p>
+                                    </div>
+                                </a>
+                            </li>
+                        </ul>
+                        <!-- /.control-sidebar-menu -->
+                        <h3 class="control-sidebar-heading">Tasks Progress</h3>
+                        <ul class="control-sidebar-menu">
+                            <li>
+                                <a href="javascript:void(0)">
+                                    <h4 class="control-sidebar-subheading">
                                                                 Custom Template Design
                                                                 <span class="label label-danger pull-right">70%</span>
                                                         </h4>
-                                <div class="progress progress-xxs">
-                                    <div class="progress-bar progress-bar-danger" style="width: 70%"></div>
-                                </div>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="javascript:void(0)">
-                                <h4 class="control-sidebar-subheading">
+                                    <div class="progress progress-xxs">
+                                        <div class="progress-bar progress-bar-danger" style="width: 70%"></div>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0)">
+                                    <h4 class="control-sidebar-subheading">
                                                                 Update Resume
                                                                 <span class="label label-success pull-right">95%</span>
                                                         </h4>
-                                <div class="progress progress-xxs">
-                                    <div class="progress-bar progress-bar-success" style="width: 95%"></div>
-                                </div>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="javascript:void(0)">
-                                <h4 class="control-sidebar-subheading">
+                                    <div class="progress progress-xxs">
+                                        <div class="progress-bar progress-bar-success" style="width: 95%"></div>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0)">
+                                    <h4 class="control-sidebar-subheading">
                                                                 Laravel Integration
                                                                 <span class="label label-warning pull-right">50%</span>
                                                         </h4>
-                                <div class="progress progress-xxs">
-                                    <div class="progress-bar progress-bar-warning" style="width: 50%"></div>
-                                </div>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="javascript:void(0)">
-                                <h4 class="control-sidebar-subheading">
+                                    <div class="progress progress-xxs">
+                                        <div class="progress-bar progress-bar-warning" style="width: 50%"></div>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0)">
+                                    <h4 class="control-sidebar-subheading">
                                                                 Back End Framework
                                                                 <span class="label label-primary pull-right">68%</span>
                                                         </h4>
-                                <div class="progress progress-xxs">
-                                    <div class="progress-bar progress-bar-primary" style="width: 68%"></div>
-                                </div>
-                            </a>
-                        </li>
-                    </ul>
-                    <!-- /.control-sidebar-menu -->
+                                    <div class="progress progress-xxs">
+                                        <div class="progress-bar progress-bar-primary" style="width: 68%"></div>
+                                    </div>
+                                </a>
+                            </li>
+                        </ul>
+                        <!-- /.control-sidebar-menu -->
+                    </div>
+                    <!-- /.tab-pane -->
+                    <!-- Stats tab content -->
+                    <div class="tab-pane" id="control-sidebar-stats-tab">Stats Tab Content</div>
+                    <!-- /.tab-pane -->
+                    <!-- Settings tab content -->
+                    <div class="tab-pane" id="control-sidebar-settings-tab">
+                        <form method="post">
+                            <h3 class="control-sidebar-heading">General Settings</h3>
+                            <div class="form-group">
+                                <label class="control-sidebar-subheading">
+                                    Report panel usage
+                                    <input type="checkbox" class="pull-right" checked>
+                                </label>
+                                <p>
+                                    Some information about this general settings option
+                                </p>
+                            </div>
+                            <!-- /.form-group -->
+                            <div class="form-group">
+                                <label class="control-sidebar-subheading">
+                                    Allow mail redirect
+                                    <input type="checkbox" class="pull-right" checked>
+                                </label>
+                                <p>
+                                    Other sets of options are available
+                                </p>
+                            </div>
+                            <!-- /.form-group -->
+                            <div class="form-group">
+                                <label class="control-sidebar-subheading">
+                                    Expose author name in posts
+                                    <input type="checkbox" class="pull-right" checked>
+                                </label>
+                                <p>
+                                    Allow the user to show his name in blog posts
+                                </p>
+                            </div>
+                            <!-- /.form-group -->
+                            <h3 class="control-sidebar-heading">Chat Settings</h3>
+                            <div class="form-group">
+                                <label class="control-sidebar-subheading">
+                                    Show me as online
+                                    <input type="checkbox" class="pull-right" checked>
+                                </label>
+                            </div>
+                            <!-- /.form-group -->
+                            <div class="form-group">
+                                <label class="control-sidebar-subheading">
+                                    Turn off notifications
+                                    <input type="checkbox" class="pull-right">
+                                </label>
+                            </div>
+                            <!-- /.form-group -->
+                            <div class="form-group">
+                                <label class="control-sidebar-subheading">
+                                    Delete chat history
+                                    <a href="javascript:void(0)" class="text-red pull-right"><i class="fa fa-trash-o"></i></a>
+                                </label>
+                            </div>
+                            <!-- /.form-group -->
+                        </form>
+                    </div>
+                    <!-- /.tab-pane -->
                 </div>
-                <!-- /.tab-pane -->
-                <!-- Stats tab content -->
-                <div class="tab-pane" id="control-sidebar-stats-tab">Stats Tab Content</div>
-                <!-- /.tab-pane -->
-                <!-- Settings tab content -->
-                <div class="tab-pane" id="control-sidebar-settings-tab">
-                    <form method="post">
-                        <h3 class="control-sidebar-heading">General Settings</h3>
-                        <div class="form-group">
-                            <label class="control-sidebar-subheading">
-                                Report panel usage
-                                <input type="checkbox" class="pull-right" checked>
-                            </label>
-                            <p>
-                                Some information about this general settings option
-                            </p>
-                        </div>
-                        <!-- /.form-group -->
-                        <div class="form-group">
-                            <label class="control-sidebar-subheading">
-                                Allow mail redirect
-                                <input type="checkbox" class="pull-right" checked>
-                            </label>
-                            <p>
-                                Other sets of options are available
-                            </p>
-                        </div>
-                        <!-- /.form-group -->
-                        <div class="form-group">
-                            <label class="control-sidebar-subheading">
-                                Expose author name in posts
-                                <input type="checkbox" class="pull-right" checked>
-                            </label>
-                            <p>
-                                Allow the user to show his name in blog posts
-                            </p>
-                        </div>
-                        <!-- /.form-group -->
-                        <h3 class="control-sidebar-heading">Chat Settings</h3>
-                        <div class="form-group">
-                            <label class="control-sidebar-subheading">
-                                Show me as online
-                                <input type="checkbox" class="pull-right" checked>
-                            </label>
-                        </div>
-                        <!-- /.form-group -->
-                        <div class="form-group">
-                            <label class="control-sidebar-subheading">
-                                Turn off notifications
-                                <input type="checkbox" class="pull-right">
-                            </label>
-                        </div>
-                        <!-- /.form-group -->
-                        <div class="form-group">
-                            <label class="control-sidebar-subheading">
-                                Delete chat history
-                                <a href="javascript:void(0)" class="text-red pull-right"><i class="fa fa-trash-o"></i></a>
-                            </label>
-                        </div>
-                        <!-- /.form-group -->
-                    </form>
-                </div>
-                <!-- /.tab-pane -->
-            </div>
-        </aside>
-        <!-- /.control-sidebar -->
-        <!-- Add the sidebar's background. This div must be placed
+            </aside>
+            <!-- /.control-sidebar -->
+            <!-- Add the sidebar's background. This div must be placed
                          immediately after the control sidebar -->
-        <div class="control-sidebar-bg"></div>
-    </div>
-    <!-- ./wrapper -->
-    <!-- jQuery 2.2.3 -->
-    <script src="js/jquery.min.js"></script>
-    <!-- Bootstrap 3.3.6 -->
-    <script src="js/bootstrap.min.js"></script>
-    <!-- DataTables -->
-    <script src="plugins/datatables/jquery.dataTables.min.js"></script>
-    <script src="plugins/datatables/dataTables.bootstrap.min.js"></script>
-    <!-- SlimScroll -->
-    <script src="plugins/slimScroll/jquery.slimscroll.min.js"></script>
-    <!-- FastClick -->
-    <script src="plugins/fastclick/fastclick.js"></script>
-    <!-- AdminLTE App -->
-    <script src="js/app.min.js"></script>
-    <!-- AdminLTE for demo purposes -->
-    <script src="js/demo.js"></script>
-    <!-- Graduate functionality -->
-    <script src="js/pages/graduate.js" type="text/javascript"></script>
-    <!-- page script -->
-    <!-- TABLE ATTRIBUTES -->
-    <script>
-    $(function() {
-        // $("#example1").DataTable();
-        $('#example1').DataTable({
-            "paging": true,
-            "lengthChange": false,
-            "searching": false,
-            "ordering": true,
-            "info": true,
-            "autoWidth": false "defaultContent": "<i>null</i>",
-            "targets": "_all",
-            "scrollX": true,
-            "sScrollX": '100%',
-            "sScrollXInner": "110%",
-            "bScrollCollapse": true,
+            <div class="control-sidebar-bg"></div>
+        </div>
+        <!-- ./wrapper -->
+        <!-- jQuery 2.2.3 -->
+        <script src="js/jquery.min.js"></script>
+        <!-- Bootstrap 3.3.6 -->
+        <script src="js/bootstrap.min.js"></script>
+        <!-- DataTables -->
+        <script src="plugins/datatables/jquery.dataTables.min.js"></script>
+        <script src="plugins/datatables/dataTables.bootstrap.min.js"></script>
+        <!-- SlimScroll -->
+        <script src="plugins/slimScroll/jquery.slimscroll.min.js"></script>
+        <!-- FastClick -->
+        <script src="plugins/fastclick/fastclick.js"></script>
+        <!-- AdminLTE App -->
+        <script src="js/app.min.js"></script>
+        <!-- AdminLTE for demo purposes -->
+        <script src="js/demo.js"></script>
+        <!-- Graduate functionality -->
+        <script src="js/pages/graduate.js" type="text/javascript"></script>
+        <!-- page script -->
+        <!-- TABLE ATTRIBUTES -->
+        <script>
+        $(function() {
+            // $("#example1").DataTable();
+            $('#example1').DataTable({
+                "paging": true,
+                "lengthChange": false,
+                "searching": false,
+                "ordering": true,
+                "info": true,
+                "autoWidth": false "defaultContent": "<i>null</i>",
+                "targets": "_all",
+                "scrollX": true,
+                "sScrollX": '100%',
+                "sScrollXInner": "110%",
+                "bScrollCollapse": true,
 
-            fixedHeader: {
-                header: true,
-                footer: true
-            },
-
-        });
-    });
-    </script>
-    <!-- For add graduate form validation -->
-    <script type="text/javascript">
-    $(document).ready(function() {
-        $('input:required,textarea:required, select:required').on('blur', function() {
-
-            if ($(this).val() !== '') { //assuming the form doesn't have some fields populated by default.
-                $(this).addClass('green-border');
-            } else {
-                $(this).removeClass('green-border');
-            }
-        });
-
-    });
-
-    // adding validation to student id and gpa
-
-    $(document).ready(function() {
-        // called when key is pressed in textbox 
-        // for id
-        $("#studentId").keypress(function(e) {
-            //if the letter is not digit then display error and don't type anything
-            if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
-                //display error message
-                $("#errmsg").html("Digits Only").show().fadeOut("slow");
-                return false;
-            }
-        });
-
-        // for grad year
-        $("#studentGradYear").keypress(function(e) {
-            //if the letter is not digit then display error and don't type anything
-            if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
-                //display error message
-                $("#errmsg").html("Digits Only").show().fadeOut("slow");
-                return false;
-            }
-        });
-
-    });
-    </script>
-    <script type="text/javascript">
-    var gpa = document.getElementById('studentGPA');
-    gpa.addEventListener('keyup', myFunc);
-
-    function myFunc(e) {
-        var val = this.value;
-        var re = /^([0-9]+[\.]?[0-9]?[0-9]?|[0-9]+)$/g;
-        var re1 = /^([0-9]+[\.]?[0-9]?[0-9]?|[0-9]+)/g;
-        if (re.test(val)) {
-            //do something here
-
-        } else {
-            val = re1.exec(val);
-            if (val) {
-                this.value = val[0];
-            } else {
-                this.value = "";
-            }
-        }
-    }
-    var gpa1 = document.getElementById('studentGPAEdit');
-
-
-    gpa1.addEventListener('keyup', myFunc);
-
-    function myFunc(e) {
-        var val = this.value;
-        var re = /^([0-9]+[\.]?[0-9]?[0-9]?|[0-9]+)$/g;
-        var re1 = /^([0-9]+[\.]?[0-9]?[0-9]?|[0-9]+)/g;
-        if (re.test(val)) {
-            //do something here
-
-        } else {
-            val = re1.exec(val);
-            if (val) {
-                this.value = val[0];
-            } else {
-                this.value = "";
-            }
-        }
-    }
-    </script>
-    <!-- adding a graduate -->
-    <script type="text/javascript">
-    $(document).ready(function() {
-        $("#addGradBtn").click(function() {
-
-            $("#addGradModal").modal('show');
-        });
-    });
-    $(document).ready(function() {
-        $("#addGradToDataBtn").click(function() {
-            $("#addGradModal").modal('hide');
-
-
-        });
-    });
-    </script>
-    <script type="text/javascript">
-    // for deleting a graduate from the system
-    $(document).ready(function() {
-        var table = $('#example1').DataTable();
-        $('#example1 tbody').on('click', '.btn-danger', function() {
-
-            var gradId = table.row($(this).parents('tr')).data();
-
-            console.log("delete this id: " + gradId[1]);
-
-            table
-                .row($(this).parents('tr'))
-                .remove()
-                .draw();
-
-            $.ajax({
-                url: '/delete',
-                data: {
-                    gradId: gradId[1]
+                fixedHeader: {
+                    header: true,
+                    footer: true
                 },
-                type: 'POST',
+
             });
         });
+        </script>
+        <!-- For add graduate form validation -->
+        <script type="text/javascript">
+        $(document).ready(function() {
+            $('input:required,textarea:required, select:required').on('blur', function() {
 
-    });
-    </script>
-    <script type="text/javascript">
-    // for editing a current graduate
-    $(document).ready(function() {
-        var table = $('#example1').DataTable();
-
-        $('#example1 tbody').on('click', '.btn-info', function() {
-            $('#editGradModal').modal('show');
-            console.log("edit grad");
-            var gradInfo = table.row($(this).parents('tr')).data();
-
-            var id = gradInfo[1];
-            var lastName = gradInfo[2];
-            var firstName = gradInfo[3];
-            var age = gradInfo[4];
-            var gender = gradInfo[5];
-            var ethnicity = gradInfo[6];
-            var generation = gradInfo[7];
-            var UWemail = gradInfo[8];
-            var email = gradInfo[9];
-            var program = gradInfo[10];
-            var degree = gradInfo[11];
-            var gradYr = gradInfo[12];
-            var gradTrm = gradInfo[13];
-            var gpa = gradInfo[14];
-            var contact = gradInfo[15];
-
-
-            console.log("grad info: " + id + lastName + " " + firstName + " " + email + " " + UWemail + " " + gpa + " " + gradYr + " " + gender + " " + age + " " + generation + " " + ethnicity + " " + gradTrm + " " + program + " " + contact);
-
-
-            var parsedEmail = UWemail.split('@');
-            console.log(parsedEmail[0]);
-
-
-            $('#studentIdEdit').val(id);
-            $('#studentLastNameEdit').val(lastName);
-            $('#studentFirstNameEdit').val(firstName);
-            $('#studentProgramEdit').val(program);
-            $('#studentGenderEdit').val(gender);
-            $('#studentAgeEdit').val(age);
-            $('#studentEthnicityEdit').val(ethnicity);
-            $('#studentGenEdit').val(generation);
-            $('#studentEmailEdit').val(email);
-            $('#studentDegreeEdit').val(degree);
-            $('#studentGradYearEdit').val(gradYr);
-            $('#studentGradTermEdit').val(gradTrm);
-            $('#studentDegreeEdit').val(degree);
-            $('#studentGPAEdit').val(gpa);
-            $('#studentUWEmailEdit').val(parsedEmail[0])
-
-            if (contact == "Yes") {
-                contact = 1;
-
-            } else {
-                contact = 0;
-
-            }
-
-            $('#radios').val(contact);
-
-
-
-        });
-
-
-    });
-    </script>
-    <script type="text/javascript">
-    $(document).ready(function() {
-        $("#editGradToDataBtn").click(function() {
-            $("#editGradModal").modal('hide');
-
-        });
-    });
-    </script>
-    <script type="text/javascript">
-    $(document).ready(function() {
-        // Setup - add a text input to each footer cell
-        $('#example tfoot th').each(function() {
-            var title = $(this).text();
-            $(this).html('<input type="text" placeholder="Search ' + title + '" />');
-        });
-
-        // DataTable
-        var table = $('#example').DataTable();
-
-        // Apply the search
-        table.columns().every(function() {
-            var that = this;
-
-            $('input', this.footer()).on('keyup change', function() {
-                if (that.search() !== this.value) {
-                    that
-                        .search(this.value)
-                        .draw();
+                if ($(this).val() !== '') { //assuming the form doesn't have some fields populated by default.
+                    $(this).addClass('green-border');
+                } else {
+                    $(this).removeClass('green-border');
                 }
             });
+
         });
-    });
-    </script>
+
+        // adding validation to student id and gpa
+
+        $(document).ready(function() {
+            // called when key is pressed in textbox 
+            // for id
+            $("#studentId").keypress(function(e) {
+                //if the letter is not digit then display error and don't type anything
+                if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
+                    //display error message
+                    $("#errmsg").html("Digits Only").show().fadeOut("slow");
+                    return false;
+                }
+            });
+
+            // for grad year
+            $("#studentGradYear").keypress(function(e) {
+                //if the letter is not digit then display error and don't type anything
+                if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
+                    //display error message
+                    $("#errmsg").html("Digits Only").show().fadeOut("slow");
+                    return false;
+                }
+            });
+
+        });
+        </script>
+        <script type="text/javascript">
+        var gpa = document.getElementById('studentGPA');
+        gpa.addEventListener('keyup', myFunc);
+
+        function myFunc(e) {
+            var val = this.value;
+            var re = /^([0-9]+[\.]?[0-9]?[0-9]?|[0-9]+)$/g;
+            var re1 = /^([0-9]+[\.]?[0-9]?[0-9]?|[0-9]+)/g;
+            if (re.test(val)) {
+                //do something here
+
+            } else {
+                val = re1.exec(val);
+                if (val) {
+                    this.value = val[0];
+                } else {
+                    this.value = "";
+                }
+            }
+        }
+        var gpa1 = document.getElementById('studentGPAEdit');
+
+
+        gpa1.addEventListener('keyup', myFunc);
+
+        function myFunc(e) {
+            var val = this.value;
+            var re = /^([0-9]+[\.]?[0-9]?[0-9]?|[0-9]+)$/g;
+            var re1 = /^([0-9]+[\.]?[0-9]?[0-9]?|[0-9]+)/g;
+            if (re.test(val)) {
+                //do something here
+
+            } else {
+                val = re1.exec(val);
+                if (val) {
+                    this.value = val[0];
+                } else {
+                    this.value = "";
+                }
+            }
+        }
+        </script>
+        <!-- adding a graduate -->
+        <script type="text/javascript">
+        $(document).ready(function() {
+            $("#addFoodMain").click(function() {
+
+                $("#addFoodModal").modal('show');
+            });
+        });
+        $(document).ready(function() {
+            $("#button1id").click(function() {
+                $("#addFoodModal").modal('hide');
+
+
+            });
+        });
+        </script>
+        <script type="text/javascript">
+        // for deleting a graduate from the system
+        $(document).ready(function() {
+            var table = $('#example1').DataTable();
+            $('#example1 tbody').on('click', '.btn-danger', function() {
+
+                var gradId = table.row($(this).parents('tr')).data();
+
+                console.log("delete this id: " + gradId[1]);
+
+                table
+                    .row($(this).parents('tr'))
+                    .remove()
+                    .draw();
+
+                $.ajax({
+                    url: '/delete',
+                    data: {
+                        gradId: gradId[1]
+                    },
+                    type: 'POST',
+                });
+            });
+
+        });
+        </script>
+        <script type="text/javascript">
+        // for editing a current graduate
+        $(document).ready(function() {
+            var table = $('#example1').DataTable();
+
+            $('#example1 tbody').on('click', '.btn-info', function() {
+                $('#editFoodModal').modal('show');
+                console.log("edit food");
+                var gradInfo = table.row($(this).parents('tr')).data();
+
+                var id = gradInfo[1];
+                var name = gradInfo[2];
+                var description = gradInfo[3];
+                var category = gradInfo[4];
+                var foodType = gradInfo[5];
+                var servingSize = gradInfo[6];
+                var cals = gradInfo[7];
+                var fat = gradInfo[8];
+                var protein = gradInfo[9];
+                var carbs = gradInfo[10];
+
+
+
+                console.log(id);
+                console.log(name);
+                console.log(description);
+                console.log(category);
+                console.log(foodType);
+                console.log(servingSize);
+                console.log(cals);
+                console.log(fat);
+                console.log(protein);
+                console.log(carbs);
+
+
+                $('#idE').val(id);
+                $('#nameE').val(name);
+                $('#descriptionE').val(description);
+                $('#categoryE').val(category);
+                $('#foodTypeE').val(foodType);
+                $('#servingSizeE').val(servingSize);
+                $('#caloriesE').val(cals);
+                $('#fatE').val(fat);
+                $('#proteinE').val(protein);
+                $('#carbsE').val(carbs);
+
+
+            });
+
+
+        });
+        </script>
+        <script type="text/javascript">
+        $(document).ready(function() {
+            $("#editFoodBtn").click(function() {
+                $("#editFoodModal").modal('hide');
+
+            });
+        });
+        </script>
+        <script type="text/javascript">
+        $(document).ready(function() {
+            // Setup - add a text input to each footer cell
+            $('#example tfoot th').each(function() {
+                var title = $(this).text();
+                $(this).html('<input type="text" placeholder="Search ' + title + '" />');
+            });
+
+            // DataTable
+            var table = $('#example').DataTable();
+
+            // Apply the search
+            table.columns().every(function() {
+                var that = this;
+
+                $('input', this.footer()).on('keyup change', function() {
+                    if (that.search() !== this.value) {
+                        that
+                            .search(this.value)
+                            .draw();
+                    }
+                });
+            });
+        });
+        </script>
 </body>
 
 </html>
