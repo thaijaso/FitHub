@@ -175,9 +175,8 @@ app.get('/coverflow', (req, res) => {
 			}
 	
 			res.render('coverflow.ejs', clientsObj);
+			connection.release();
 		});
-
-		
 	});
 });
 
