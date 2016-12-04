@@ -73,7 +73,29 @@ app.post('/login', (req, res) => {
 
 	//check if trainer is logging in
 	if (username == trainerUsername && password == trainerPassword) {
-		res.render('coverflow.ejs');
+
+		var query = "SELECT * FROM Client";
+
+		pool.getConnection((err, connection) => {
+			if (err) {
+				console.log(err);
+				res.send(err);
+			}
+
+			connection.query(query, (err, rows) => {
+				if (err) {
+					console.log(err);
+					res.send(err);
+				}
+
+				var clientsObj = {
+					'clients': rows
+				}
+	
+				res.render('coverflow.ejs', clientsObj);
+				connection.release();
+			});
+		});
 	} else {
 
 		var query = "SELECT * FROM Client "+
