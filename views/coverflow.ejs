@@ -142,8 +142,15 @@
                 <!-- sidebar menu: : style can be found in sidebar.less -->
                 <ul class="sidebar-menu">
                     <li class="header">MAIN NAVIGATION</li>
-                    <li class="active treeview">
-                        <a href="#">
+                    <li class="active">
+                        <a href="/coverflow">
+                            <i class="fa fa fa-dashboard"></i>
+                            <span>Coverflow</span>
+                            <span class="pull-right-container"></span>
+                        </a>
+                    </li>
+                    <li class="treeview">
+                        <a href="/coverflow">
                             <i class="fa fa-dashboard"></i> <span>Clients</span>
                             <span class="pull-right-container">
                                 <i class="fa fa-angle-left pull-right"></i>
@@ -152,7 +159,7 @@
                         <ul class="treeview-menu">
                             <% for (var i = 0; i < clients.length; i++) { %>
                                 <li>
-                                    <a href="/clients/<%=clients[i].id %>">
+                                    <a href="/client/<%=clients[i].id %>">
                                         <i class="fa fa-circle-o"></i>
                                         <%= clients[i].firstName %>
                                     </a>
@@ -168,13 +175,13 @@
         <div class="content-wrapper">
             <!-- Content Header (Page header) -->
             <section class="content-header">
-                <h1>Clients</h1>
+                <h1>Coverflow</h1>
                 <ol class="breadcrumb">
                     <li><a href="#"><i class="fa fa-dashboard"></i> Report</a></li>
                 </ol>
             </section>
             <!-- Main content -->
-            <h3 class="profile-username text-center">Nina Mcintire</h3>
+            <h3 class="profile-username text-center"></h3>
             <section class="content">
                 <div class="wrapper2">
                     <div class="coverflow">
@@ -387,15 +394,19 @@
         <!-- AdminLTE for demo purposes -->
         <script src="js/demo.js"></script>
         <script>
-        var $el = $('.coverflow').coverflow({
+        $(document).ready(function() {
+            var $el = $('.coverflow').coverflow({
             active: <%= Math.floor(clients.length / 2) %>,
             visibleAside: 3
         });
 
         $(window).resize(debounce(function() {
             $el.coverflow();
+            
         }, 20, true));
+        });
         </script>
+        
         <script>
         var clients = <%- JSON.stringify(clients) %>;
         var middleClient = clients[Math.floor(clients.length / 2)];
