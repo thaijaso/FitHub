@@ -584,6 +584,7 @@ app.get('/coverflow', (req, res) => {
             connection.release();
         });
     });
+});
 app.post('/upload-photo', upload.single('avatar'), function(req, res)  {
 	if (req.session.user) {
 		console.log(req.file);
