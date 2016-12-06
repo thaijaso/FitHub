@@ -300,7 +300,7 @@
                                                             <a href="#" class="btn btn-success btn-xs">
                                                                 <i class="fa fa-cutlery" aria-hidden="true"></i> Eat
                                                             </a>
-                                                            <a href="#" class="btn btn-info btn-xs">
+                                                            <a href="#" class="btn btn-info btn-xs" id="editBtn">
                                                                 <i class="fa fa-edit" aria-hidden="true"></i> Edit
                                                             </a>
                                                             <a href="#" class="btn btn-danger btn-xs">
@@ -509,6 +509,15 @@
                     </div>
                 </div>
             </div>
+            </div>
+
+            <footer class="main-footer">
+                <div class="pull-right hidden-xs">
+                    <b>Version</b> 2.3.8
+                </div>
+                <strong>Copyright &copy; 2014-2016 <a href="http://almsaeedstudio.com">Almsaeed Studio</a>.</strong> All rights reserved.
+            </footer>
+
             <aside class="control-sidebar control-sidebar-dark">
                 <!-- Create the tabs -->
                 <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
@@ -878,9 +887,9 @@
         });
         </script>
         <script type="text/javascript">
-            $('#addDiaryBtn').click(function () {
-                $('#eatModal').modal('hide');
-            });
+        $('#addDiaryBtn').click(function() {
+            $('#eatModal').modal('hide');
+        });
         </script>
         <!--  <script type="text/javascript">
         $(document).ready(function() {
@@ -931,53 +940,53 @@
         <script type="text/javascript">
         // for editing a current graduate
         $(document).ready(function() {
-            var table = $('#example1').DataTable();
+                    var table = $('#example1').DataTable();
 
-            $('#example1 tbody').on('click', '.btn-info', function() {
-                console.log("edit food");
-                var gradInfo = table.row($(this).parents('tr')).data();
+                    $('#example1 tbody').on('click', '#editBtn', function() {
+                        console.log("edit food");
+                        var gradInfo = table.row($(this).parents('tr')).data();
 
-                var id = gradInfo[1];
-                var name = gradInfo[2];
-                var description = gradInfo[3];
-                var category = gradInfo[4];
-                var foodType = gradInfo[5];
-                var servingSize = gradInfo[6];
-                var cals = gradInfo[7];
-                var fat = gradInfo[8];
-                var protein = gradInfo[9];
-                var carbs = gradInfo[10];
-                
-                console.log(id);
-                console.log(name);
-                console.log(description);
-                console.log(category);
-                console.log(foodType);
-                console.log(servingSize);
-                console.log(cals);
-                console.log(fat);
-                console.log(protein);
-                console.log(carbs);
+                        var id = gradInfo[1];
+                        var name = gradInfo[2];
+                        var description = gradInfo[3];
+                        var category = gradInfo[4];
+                        var foodType = gradInfo[5];
+                        var servingSize = gradInfo[6];
+                        var cals = gradInfo[7];
+                        var fat = gradInfo[8];
+                        var protein = gradInfo[9];
+                        var carbs = gradInfo[10];
 
-
-                $('#idE').val(id);
-                $('#nameE').val(name);
-                $('#descriptionE').val(description);
-                $('#categoryE').val(category);
-                $('#foodTypeE').val(foodType);
-                $('#servingSizeE').val(servingSize);
-                $('#caloriesE').val(cals);
-                $('#fatE').val(fat);
-                $('#proteinE').val(protein);
-                $('#carbsE').val(carbs);
+                        console.log(id);
+                        console.log(name);
+                        console.log(description);
+                        console.log(category);
+                        console.log(foodType);
+                        console.log(servingSize);
+                        console.log(cals);
+                        console.log(fat);
+                        console.log(protein);
+                        console.log(carbs);
 
 
-                $('#editFoodModal').modal('show');
+                        $('#idE').val(id);
+                        $('#nameE').val(name);
+                        $('#descriptionE').val(description);
+                        $('#categoryE').val(category);
+                        $('#foodTypeE').val(foodType);
+                        $('#servingSizeE').val(servingSize);
+                        $('#caloriesE').val(cals);
+                        $('#fatE').val(fat);
+                        $('#proteinE').val(protein);
+                        $('#carbsE').val(carbs);
 
 
-        });
+                        $('#editFoodModal').modal('show');
+
+
+                    });
+                });
         </script>
-        
         <script type="text/javascript">
         $(document).ready(function() {
             $("#editFoodBtn").click(function() {
