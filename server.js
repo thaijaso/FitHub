@@ -17,7 +17,7 @@ const pool = mysql.createPool({
     password: 'ou8inxs2ic',
     database: 'NutritionTracker'
 });
-
+ 
 //setup
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
@@ -255,9 +255,9 @@ app.get('/editFood', (req, res) => {
 
 app.post('/editFood', (req, res) => {
 
-	console.dir(req.body);
+    console.dir(req.body);
 
-	var id = req.body.id;
+    var id = req.body.id;
     var name = req.body.name;
     var description = req.body.description;
     var cals = req.body.calories;
@@ -273,10 +273,8 @@ app.post('/editFood', (req, res) => {
 
 
 
-    var query = 'UPDATE Food SET foodName=' + "'" + name + "'" + ", description = " + "'" + description + "'" + ", category=" + "'" + category 
-  					  + "'" + ",calories=" + cals + ", fat=" + fat + ", protein=" + protein + ",carbs=" + carbs + ",foodType=" + "'" + type + "'" +
-    				 ", servingSize=" + "'" + servingSize + "'" 
-    		    +" WHERE id=" + id;
+    var query = 'UPDATE Food SET foodName=' + "'" + name + "'" + ", description = " + "'" + description + "'" + ", category=" + "'" + category + "'" + ",calories=" + cals + ", fat=" + fat + ", protein=" + protein + ",carbs=" + carbs + ",foodType=" + "'" + type + "'" +
+        ", servingSize=" + "'" + servingSize + "'" + " WHERE id=" + id;
 
     console.log(query);
 
@@ -288,14 +286,14 @@ app.post('/editFood', (req, res) => {
             res.send(err);
         }
 
-        connection.query(query, (err,rows) => {
+        connection.query(query, (err, rows) => {
 
-        	if(err) {
-        		console.log(err);
-        	} else {
-        		console.log("Food was edited!");
-        		res.redirect('/food');
-        	}
+            if (err) {
+                console.log(err);
+            } else {
+                console.log("Food was edited!");
+                res.redirect('/food');
+            }
 
         });
 
@@ -303,8 +301,62 @@ app.post('/editFood', (req, res) => {
     });
 
 });
+
+app.get('/deleteFood', (req, res) => {
+    res.render('food.ejs');
+});
+
+app.post('/deleteFood', (req, res) => {
+    console.dir("delete this id: " + req.body.gradId);
+
+    var foodId = req.body.foodId;
+
+    pool.getConnection(function(error, connection) {
+        connection.query("DELETE FROM Food WHERE id =" + "'" + foodId + "'" + ";", function(err, rows) {
+
+            if (err) {
+                console.log(err);
+            } else {
+                console.log(foodId + " was deleted");
+                connection.release();
+
+                res.redirect('/food');
+
+            }
+
+        });
+
+    });
+
+
+});
 app.get('/diary', (req, res) => {
     res.render('diary.ejs');
+});
+
+
+app.post('/addToDiary', (req,res) => {
+    pool.getConnection(function(error, connection) {
+        connection.query("DELETE FROM Food WHERE id =" + "'" + foodId + "'" + ";", function(err, rows) {
+
+            if (err) {
+                console.log(err);
+            } else {
+                console.log(foodId + " was deleted");
+                connection.release();
+
+                res.redirect('/food');
+
+            }
+
+        });
+
+    });
+
+
+
+    console.dir(req.body);
+
 });
 
 app.get('/coverflow', (req, res) => {

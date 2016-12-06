@@ -355,6 +355,43 @@
             <!-- /.content -->
         </div>
         <!-- /.content-wrapper -->
+        <!-- START OF EAT MODAL -->
+        <div class="modal fade" id="eatModal">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title">Please Enter Quantity</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form class="form-horizontal" id="editFoodFrm">
+                            <fieldset>
+                                <!-- Form Name -->
+                                <!-- Appended Input-->
+                                <div class="form-group">
+                                    <label class="col-md-4 control-label" for="appendedtext">Quantity</label>
+                                    <div class="col-md-4">
+                                        <div class="input-group">
+                                            <input id="quantity" name="appendedtext" class="form-control" placeholder="e.g. 2" type="text" required="">
+                                            <span class="input-group-addon">servings</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-warning" id="addDiaryBtn">Add to Diary</button>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        <!-- /.modal -->
         <!-- start edit modal -->
         <div class="modal fade" id="editFoodModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
@@ -784,14 +821,96 @@
         });
         </script>
         <script type="text/javascript">
+        $(document).ready(function() {
+            $("#editFoodBtn").click(function() {
+                $("#editFoodModal").modal('hide');
+
+            });
+        });
+        </script>
+        <script type="text/javascript">
+        $(document).ready(function() {
+            var table = $('#example1').DataTable();
+
+            $(".btn-success").click(function() {
+                var foodRow = table.row($(this).parents('tr')).data();
+
+                var foodId = foodRow[1];
+                var name = foodRow[2];
+                var description = foodRow[3];
+                var category = foodRow[4];
+                var type = foodRow[5];
+                var size = foodRow[6];
+                var cals = foodRow[7];
+                var fat = foodRow[8];
+                var protein = foodRow[9];
+                var carbs = foodRow[10];
+
+                console.log(name + " " + foodId);
+                $("#eatModal").modal('show');
+
+                $('.btn-warning').click(function() {
+
+                    // ('#eatModal').modal.('hide');
+
+
+                    var portion = parseInt($('#quantity').val());
+                    $.ajax({
+                        url: '/addToDiary',
+                        data: {
+                            foodId: foodId,
+                            name: name,
+                            description: description,
+                            category: category,
+                            foodType: type,
+                            servingSize: size,
+                            cals: cals,
+                            fat: fat,
+                            protein: protein,
+                            carbs: carbs,
+                            portions: portion
+                        },
+                        type: 'POST',
+                    });
+                });
+
+            });
+        });
+        </script>
+        <script type="text/javascript">
+            $('#addDiaryBtn').click(function () {
+                $('#eatModal').modal('hide');
+            });
+        </script>
+        <!--  <script type="text/javascript">
+        $(document).ready(function() {
+
+
+            var totQuantity = 0;
+            var myQuantity;
+
+
+            $('.btn-warning').click(function() {
+                totQuantity = parseInt(totQuantity) + parseInt($('#quantity').val());
+                console.log(totQuantity);
+
+
+
+
+
+            });
+
+        });
+        </script> -->
+        <script type="text/javascript">
         // for deleting a graduate from the system
         $(document).ready(function() {
             var table = $('#example1').DataTable();
             $('#example1 tbody').on('click', '.btn-danger', function() {
 
-                var gradId = table.row($(this).parents('tr')).data();
+                var foodId = table.row($(this).parents('tr')).data();
 
-                console.log("delete this id: " + gradId[1]);
+                console.log("delete this id: " + foodId[1]);
 
                 table
                     .row($(this).parents('tr'))
@@ -799,9 +918,9 @@
                     .draw();
 
                 $.ajax({
-                    url: '/delete',
+                    url: '/deleteFood',
                     data: {
-                        gradId: gradId[1]
+                        foodId: foodId[1]
                     },
                     type: 'POST',
                 });
@@ -815,7 +934,6 @@
             var table = $('#example1').DataTable();
 
             $('#example1 tbody').on('click', '.btn-info', function() {
-                $('#editFoodModal').modal('show');
                 console.log("edit food");
                 var gradInfo = table.row($(this).parents('tr')).data();
 
@@ -856,17 +974,13 @@
                 $('#carbsE').val(carbs);
 
 
-            });
+                $('#editFoodModal').modal('show');
 
 
-        });
-        </script>
-        <script type="text/javascript">
-        $(document).ready(function() {
-            $("#editFoodBtn").click(function() {
-                $("#editFoodModal").modal('hide');
 
             });
+
+
         });
         </script>
         <script type="text/javascript">
