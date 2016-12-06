@@ -18,8 +18,7 @@
     <!-- AdminLTE Skins. Choose a skin from the css/skins
        folder instead of downloading all of them to reduce the load. -->
     <link rel="stylesheet" href="css/skins/_all-skins.min.css">
-    <link rel='shortcut icon' href='/public/favicon.ico' type='image/x-icon'/ >
-
+    <link rel='shortcut icon' href='/public/favicon.ico' type='image/x-icon' />
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -30,11 +29,68 @@
 
 <body class="hold-transition skin-blue sidebar-mini">
     <div class="wrapper">
+        <!-- start modal -->
+        <div class="modal modal-wide fade" id="shortModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title" id="exampleModalLabel" style="font-size: 24px;"><b>Upload Photo</b></h4>
+                    </div>
+                    <div class="modal-body">
+                        <form action="/upload-photo" role="form" method="post" enctype="multipart/form-data">
+                            <div class="box-body">
+                                <div class="form-group">
+                                    <label for="exampleInputFile">File input</label>
+                                    <input type="file" id="inputFile" name="avatar">
+                                    <p class="help-block">Import image from disk</p>
+                                    <input type="hidden" name="clientId" value="<%= user.id %>">
+                                </div>
+                            </div>
+                            <!-- /.box-body -->
+                            <div class="box-footer">
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- end modal -->
+        <div class="modal modal-wide fade" id="weightModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title" id="exampleModalLabel" style="font-size: 24px;"><b>Log Weight</b></h4>
+                    </div>
+                    <div class="modal-body">
+                        <form action="/log-weight" role="form" method="post">
+                            <div class="box-body">
+                                <div class="form-group">
+                                    <label for="exampleInputFile"></label>
+                                    <input type="text" id="inputWeight" name="weight">
+                                    <p class="help-block">Enter your current weight in lbs</p>
+                                    <input type="hidden" name="clientId" value="<%= user.id %>">
+                                </div>
+                            </div>
+                            <!-- /.box-body -->
+                            <div class="box-footer">
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
         <header class="main-header">
             <!-- Logo -->
             <a href="/dashboard" class="logo">
-                 <i class="fa fa-cloud" style="margin-right: 5px;"></i><b>Grad</b>Track
-
+                <i class="fa fa-cloud" style="margin-right: 5px;"></i><b>Fit</b>Hub
             </a>
             <!-- Header Navbar: style can be found in header.less -->
             <nav class="navbar navbar-static-top">
@@ -44,35 +100,40 @@
                 </a>
                 <div class="navbar-custom-menu">
                     <ul class="nav navbar-nav">
+                        <li>
+                            <a href="/reset-nutrition"><i class="fa fa-history"></i> Reset </a>
+                        </li>
                         <!-- User Account: style can be found in dropdown.less -->
                         <li class="dropdown user user-menu">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                <img src="/img/user-icon1.svg" class="user-image" alt="User Image">
-                                <span class="hidden-xs">Jason Thai</span>
+                                <img src="<%= user.profileImgPath %>" class="user-image" alt="User Image">
+                                <span class="hidden-xs"><%= user.firstName %> <%= user.lastName %></span>
                             </a>
                             <ul class="dropdown-menu">
                                 <!-- User image -->
                                 <li class="user-header">
-                                <img src="/img/user-icon1.svg" class="user-image" alt="User Image">
+                                    <img src="<%= user.profileImgPath %>" class="user-image" alt="User Image">
                                     <p>
-                                        Jason Thai - Client
-                                        <small>Member since Nov. 2012</small>
+                                        <%= user.firstName %>
+                                            <%= user.lastName %> - Client
+                                                <small>Member since Nov. 2012</small>
                                     </p>
                                 </li>
                                 <!-- Menu Footer-->
                                 <li class="user-footer">
-                                    <div class="pull-left">
-                                        <a href="#" class="btn btn-default btn-flat">Profile</a>
-                                    </div>
-                                    <div class="pull-right">
-                                        <a href="#" class="btn btn-default btn-flat">Sign out</a>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <a href="#" class="btn btn-default btn-flat">Profile</a>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <a id="uploadBut" href="#" class="btn btn-default btn-flat">Upload</a>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <a href="/logout" class="btn btn-default btn-flat">Sign out</a>
+                                        </div>
                                     </div>
                                 </li>
                             </ul>
-                        </li>
-                        <!-- Control Sidebar Toggle Button -->
-                        <li>
-                            <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
                         </li>
                     </ul>
                 </div>
@@ -85,10 +146,13 @@
                 <!-- Sidebar user panel -->
                 <div class="user-panel">
                     <div class="pull-left image">
-                         <img src="/img/avatar.png" class="user-image" alt="User Image">
+                        <img src="<%= user.profileImgPath %>" class="user-image" alt="User Image">
                     </div>
                     <div class="pull-left info">
-                        <p>Jason Thai</p>
+                        <p>
+                            <%= user.firstName %>
+                                <%= user.lastName %>
+                        </p>
                         <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
                     </div>
                 </div>
@@ -108,7 +172,7 @@
                     <li class="header">MAIN NAVIGATION</li>
                     <li class="active">
                         <a href="/client-dashboard">
-                            <i class="fa fa fa-dashboard"></i> 
+                            <i class="fa fa fa-dashboard"></i>
                             <span>Dashboard</span>
                             <span class="pull-right-container">
                                 <small class="label pull-right bg-green">new</small>
@@ -117,14 +181,14 @@
                     </li>
                     <li>
                         <a href="/food">
-                            <i class="fa fa fa-dashboard"></i> 
+                            <i class="fa fa fa-dashboard"></i>
                             <span>Food</span>
                             <span class="pull-right-container"></span>
                         </a>
                     </li>
                     <li>
                         <a href="/diary">
-                            <i class="fa fa fa-dashboard"></i> 
+                            <i class="fa fa fa-dashboard"></i>
                             <span>Diary</span>
                             <span class="pull-right-container"></span>
                         </a>
@@ -146,12 +210,12 @@
             <section class="content">
                 <!-- Small boxes (Stat box) -->
                 <div class="row">
-                <!-- ./col -->
+                    <!-- ./col -->
                     <div class="col-lg-3 col-xs-6">
                         <!-- small box -->
                         <div class="small-box bg-aqua">
                             <div class="inner">
-                                <h3>1543</h3>
+                                <h3><%= nutrition.maxCalories - nutrition.curCalories %></h3>
                                 <p>Calories Remaining</p>
                             </div>
                             <div class="icon">
@@ -164,7 +228,7 @@
                         <!-- small box -->
                         <div class="small-box bg-green">
                             <div class="inner">
-                                <h3>90</h3>
+                                <h3><%= nutrition.maxProtein - nutrition.curProtein %> g</h3>
                                 <p>Proteins Remaining</p>
                             </div>
                             <div class="icon">
@@ -178,7 +242,7 @@
                         <!-- small box -->
                         <div class="small-box bg-yellow">
                             <div class="inner">
-                                <h3>195<!-- <sup style="font-size: 20px">%</sup> --></h3>
+                                <h3><%= nutrition.maxCarbs - nutrition.curCarbs %> g</h3>
                                 <p>Carbs Remaining</p>
                             </div>
                             <div class="icon">
@@ -192,7 +256,7 @@
                         <!-- small box -->
                         <div class="small-box bg-red">
                             <div class="inner">
-                                <h3>50</h3>
+                                <h3><%= nutrition.maxFats - nutrition.curFats %> g</h3>
                                 <p>Fats Remaining</p>
                             </div>
                             <div class="icon">
@@ -205,509 +269,303 @@
                 </div>
                 <div class="row">
                     <div class="col-md-3 col-sm-6 col-xs-12">
-          <div class="info-box bg-aqua">
-            <a href="#" style="color: white"><span class="info-box-icon"><i class="fa fa-bookmark-o"></i></span></a>
-            <div class="info-box-content">
-              <span class="info-box-text">Water Intake</span>
-              <span class="info-box-number">100/300 ml</span>
-
-              <div class="progress">
-                <div class="progress-bar" style="width: 70%"></div>
-              </div>
-                  <span class="progress-description">
-                    70% Increase in 30 Days
-                  </span>
-            </div>
-            <!-- /.info-box-content -->
-          </div>
-          <!-- /.info-box -->
-        </div>
-        <!-- /.col -->
-        <div class="col-md-3 col-sm-6 col-xs-12">
-          <div class="info-box bg-green">
-            <span class="info-box-icon"><i class="fa fa-thumbs-o-up"></i></span>
-
-            <div class="info-box-content">
-              <span class="info-box-text">Protien</span>
-              <span class="info-box-number">40/135</span>
-
-              <div class="progress">
-                <div class="progress-bar" style="width: 29%"></div>
-              </div>
-                  <span class="progress-description">
-                    70% Increase in 30 Days
-                  </span>
-            </div>
-            <!-- /.info-box-content -->
-          </div>
-          <!-- /.info-box -->
-        </div>
-        <!-- /.col -->
-        <div class="col-md-3 col-sm-6 col-xs-12">
-          <div class="info-box bg-yellow">
-            <span class="info-box-icon"><i class="fa fa-calendar"></i></span>
-
-            <div class="info-box-content">
-              <span class="info-box-text">Carbs</span>
-              <span class="info-box-number">100/295</span>
-
-              <div class="progress">
-                <div class="progress-bar" style="width: 70%"></div>
-              </div>
-                  <span class="progress-description">
-                    70% Increase in 30 Days
-                  </span>
-            </div>
-            <!-- /.info-box-content -->
-          </div>
-          <!-- /.info-box -->
-        </div>
-        <!-- /.col -->
-        <div class="col-md-3 col-sm-6 col-xs-12">
-          <div class="info-box bg-red">
-            <span class="info-box-icon"><i class="fa fa-comments-o"></i></span>
-
-            <div class="info-box-content">
-              <span class="info-box-text">Fats</span>
-              <span class="info-box-number">50/75</span>
-
-              <div class="progress">
-                <div class="progress-bar" style="width: 70%"></div>
-              </div>
-                  <span class="progress-description">
-                    70% Increase in 30 Days
-                  </span>
-            </div>
-            <!-- /.info-box-content -->
-          </div>
-          <!-- /.info-box -->
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <!-- DONUT CHART -->
-                        <div class="box box-danger">
-                            <div class="box-header with-border">
-                                <h3 class="box-title">Macronutrient Breakdown</h3>
-                                <div class="box-tools pull-right">
-                                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
-                                    </button>
-                                    <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                        <div class="info-box bg-aqua">
+                            <a href="#" style="color: white"><span class="info-box-icon"><i class="fa fa-bookmark-o"></i></span></a>
+                            <div class="info-box-content">
+                                <span class="info-box-text">Water Intake</span>
+                                <span class="info-box-number"><%= nutrition.curWater %>/<%= nutrition.minWater%> ml</span>
+                                <div class="progress">
+                                    <div class="progress-bar" 
+                                        style="width:<%= Math.round(nutrition.curWater * 100 / nutrition.minWater) %>%">
+                                    </div>
                                 </div>
+                                <span class="progress-description">
+                                    <%= Math.round(nutrition.curWater * 100 / nutrition.minWater) %>% Completed
+                                </span>
                             </div>
-                            <div class="box-body">
-                                <canvas id="pieChart" style="height:250px"></canvas>
-                            </div>
-                            <button type="button" class="btn btn-block btn-primary">Add Food</button>
-                            <!-- /.box-body -->
+                            <!-- /.info-box-content -->
                         </div>
-                        <!-- /.box -->
-                        <!-- DONUT CHART -->
+                        <!-- /.info-box -->
                     </div>
-                    <!-- /.col (LEFT) -->
-                    <div class="col-md-6">
-                        <!-- LINE CHART -->
-                        <div class="box box-info">
-                            <div class="box-header with-border">
-                                <h3 class="box-title">Weight</h3>
-                                <div class="box-tools pull-right">
-                                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
-                                    </button>
-                                    <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                    <!-- /.col -->
+                    <div class="col-md-3 col-sm-6 col-xs-12">
+                        <div class="info-box bg-green">
+                            <span class="info-box-icon"><i class="fa fa-thumbs-o-up"></i></span>
+                            <div class="info-box-content">
+                                <span class="info-box-text">Protein</span>
+                                <span class="info-box-number"><%= nutrition.curProtein%>/<%=nutrition.maxProtein%> g</span>
+                                <div class="progress">
+                                    <div class="progress-bar" style="width: <%= Math.round(nutrition.curProtein * 100 / nutrition.maxProtein)%>%"></div>
                                 </div>
+                                <span class="progress-description">
+                                    <%= Math.round(nutrition.curProtein * 100 / nutrition.maxProtein)%>% Completed
+                                </span>
                             </div>
-                            <div class="box-body">
-                                <div class="chart">
-                                    <canvas id="lineChart" style="height:245px"></canvas>
-                                </div>
-                            </div>
-                            <button type="button" class="btn btn-block btn-primary">Log Weight</button>
-                            <!-- /.box-body -->
+                            <!-- /.info-box-content -->
                         </div>
-                        <!-- /.box -->
+                        <!-- /.info-box -->
                     </div>
-                    <!-- /.col (RIGHT) -->
-                </div>
-                <!-- /.row -->
+                    <!-- /.col -->
+                    <div class="col-md-3 col-sm-6 col-xs-12">
+                        <div class="info-box bg-yellow">
+                            <span class="info-box-icon"><i class="fa fa-calendar"></i></span>
+                            <div class="info-box-content">
+                                <span class="info-box-text">Carbs</span>
+                                <span class="info-box-number"><%= nutrition.curCarbs%>/<%=nutrition.maxCarbs%> g</span>
+                                <div class="progress">
+                                    <div class="progress-bar" style="width: <%= Math.round(nutrition.curCarbs * 100 / nutrition.maxCarbs)%>%"></div>
+                                </div>
+                                <span class="progress-description">
+                                    <%= Math.round(nutrition.curCarbs * 100 / nutrition.maxCarbs)%>% Completed
+                                </span>
+                            </div>
+                            <!-- /.info-box-content -->
+                        </div>
+                        <!-- /.info-box -->
+                    </div>
+                    <!-- /.col -->
+                    <div class="col-md-3 col-sm-6 col-xs-12">
+                        <div class="info-box bg-red">
+                            <span class="info-box-icon"><i class="fa fa-comments-o"></i></span>
+                            <div class="info-box-content">
+                                <span class="info-box-text">Fats</span>
+                                <span class="info-box-number"><%= nutrition.curFats%>/<%=nutrition.maxFats%> g</span>
+                                <div class="progress">
+                                    <div class="progress-bar" style="width: <%= Math.round(nutrition.curFats * 100 / nutrition.maxFats)%>%"></div>
+                                </div>
+                                <span class="progress-description">
+                                    <%= Math.round(nutrition.curFats * 100 / nutrition.maxFats)%>% Completed
+                                </span>
+                            </div>
+                            <!-- /.info-box-content -->
+                        </div>
+                        <!-- /.info-box -->
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <!-- LINE CHART -->
+                            <div class="box box-info">
+                                <div class="box-header with-border">
+                                    <h3 class="box-title">Weight Per Day</h3>
+                                    <div class="box-tools pull-right">
+                                        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                                    </div>
+                                </div>
+                                <div class="box-body">
+                                    <div class="chart">
+                                        <canvas id="lineChart" style="height:245px"></canvas>
+                                    </div>
+                                </div>
+                                <!-- /.box-body -->
+                            </div>
+                            <!-- /.box -->
+                            <a id="weightBut"><button type="button" class="btn btn-block btn-info">Log Weight</button></a>
+                        </div>
+                        <!-- /.col (LEFT) -->
+                        <div class="col-md-6">
+                            <!-- DONUT CHART -->
+                            <div class="box box-danger">
+                                <div class="box-header with-border">
+                                    <h3 class="box-title">Macronutrient Breakdown</h3>
+                                    <div class="box-tools pull-right">
+                                        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                                    </div>
+                                </div>
+                                <div class="box-body">
+                                    <canvas id="pieChart" style="height:250px"></canvas>
+                                </div>
+                                <!-- /.box-body -->
+                            </div>
+                            <!-- /.box -->
+                            <!-- DONUT CHART -->
+                            <button type="button" class="btn btn-block btn-danger">Add Food</button>
+                        </div>
+                        <!-- /.col (RIGHT) -->
+                    </div>
+                    <!-- /.row -->
             </section>
             <!-- /.content -->
+            </div>
+            <!-- /.content-wrapper -->
+            <footer class="main-footer">
+                <div class="pull-right hidden-xs">
+                    <b>Version</b> 2.3.8
+                </div>
+                <strong>Copyright &copy; 2014-2016 <a href="http://almsaeedstudio.com">Almsaeed Studio</a>.</strong> All rights reserved.
+            </footer>
         </div>
-        <!-- /.content-wrapper -->
-        <footer class="main-footer">
-            <div class="pull-right hidden-xs">
-                <b>Version</b> 2.3.8
-            </div>
-            <strong>Copyright &copy; 2014-2016 <a href="http://almsaeedstudio.com">Almsaeed Studio</a>.</strong> All rights reserved.
-        </footer>
-        <!-- Control Sidebar -->
-        <aside class="control-sidebar control-sidebar-dark">
-            <!-- Create the tabs -->
-            <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
-                <li><a href="#control-sidebar-home-tab" data-toggle="tab"><i class="fa fa-home"></i></a></li>
-                <li><a href="#control-sidebar-settings-tab" data-toggle="tab"><i class="fa fa-gears"></i></a></li>
-            </ul>
-            <!-- Tab panes -->
-            <div class="tab-content">
-                <!-- Home tab content -->
-                <div class="tab-pane" id="control-sidebar-home-tab">
-                    <h3 class="control-sidebar-heading">Recent Activity</h3>
-                    <ul class="control-sidebar-menu">
-                        <li>
-                            <a href="javascript:void(0)">
-                                <i class="menu-icon fa fa-birthday-cake bg-red"></i>
-                                <div class="menu-info">
-                                    <h4 class="control-sidebar-subheading">Langdon's Birthday</h4>
-                                    <p>Will be 23 on April 24th</p>
-                                </div>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="javascript:void(0)">
-                                <i class="menu-icon fa fa-user bg-yellow"></i>
-                                <div class="menu-info">
-                                    <h4 class="control-sidebar-subheading">Frodo Updated His Profile</h4>
-                                    <p>New phone +1(800)555-1234</p>
-                                </div>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="javascript:void(0)">
-                                <i class="menu-icon fa fa-envelope-o bg-light-blue"></i>
-                                <div class="menu-info">
-                                    <h4 class="control-sidebar-subheading">Nora Joined Mailing List</h4>
-                                    <p>nora@example.com</p>
-                                </div>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="javascript:void(0)">
-                                <i class="menu-icon fa fa-file-code-o bg-green"></i>
-                                <div class="menu-info">
-                                    <h4 class="control-sidebar-subheading">Cron Job 254 Executed</h4>
-                                    <p>Execution time 5 seconds</p>
-                                </div>
-                            </a>
-                        </li>
-                    </ul>
-                    <!-- /.control-sidebar-menu -->
-                    <h3 class="control-sidebar-heading">Tasks Progress</h3>
-                    <ul class="control-sidebar-menu">
-                        <li>
-                            <a href="javascript:void(0)">
-                                <h4 class="control-sidebar-subheading">
-                Custom Template Design
-                <span class="label label-danger pull-right">70%</span>
-              </h4>
-                                <div class="progress progress-xxs">
-                                    <div class="progress-bar progress-bar-danger" style="width: 70%"></div>
-                                </div>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="javascript:void(0)">
-                                <h4 class="control-sidebar-subheading">
-                Update Resume
-                <span class="label label-success pull-right">95%</span>
-              </h4>
-                                <div class="progress progress-xxs">
-                                    <div class="progress-bar progress-bar-success" style="width: 95%"></div>
-                                </div>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="javascript:void(0)">
-                                <h4 class="control-sidebar-subheading">
-                Laravel Integration
-                <span class="label label-warning pull-right">50%</span>
-              </h4>
-                                <div class="progress progress-xxs">
-                                    <div class="progress-bar progress-bar-warning" style="width: 50%"></div>
-                                </div>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="javascript:void(0)">
-                                <h4 class="control-sidebar-subheading">
-                Back End Framework
-                <span class="label label-primary pull-right">68%</span>
-              </h4>
-                                <div class="progress progress-xxs">
-                                    <div class="progress-bar progress-bar-primary" style="width: 68%"></div>
-                                </div>
-                            </a>
-                        </li>
-                    </ul>
-                    <!-- /.control-sidebar-menu -->
-                </div>
-                <!-- /.tab-pane -->
-                <!-- Stats tab content -->
-                <div class="tab-pane" id="control-sidebar-stats-tab">Stats Tab Content</div>
-                <!-- /.tab-pane -->
-                <!-- Settings tab content -->
-                <div class="tab-pane" id="control-sidebar-settings-tab">
-                    <form method="post">
-                        <h3 class="control-sidebar-heading">General Settings</h3>
-                        <div class="form-group">
-                            <label class="control-sidebar-subheading">
-                                Report panel usage
-                                <input type="checkbox" class="pull-right" checked>
-                            </label>
-                            <p>
-                                Some information about this general settings option
-                            </p>
-                        </div>
-                        <!-- /.form-group -->
-                        <div class="form-group">
-                            <label class="control-sidebar-subheading">
-                                Allow mail redirect
-                                <input type="checkbox" class="pull-right" checked>
-                            </label>
-                            <p>
-                                Other sets of options are available
-                            </p>
-                        </div>
-                        <!-- /.form-group -->
-                        <div class="form-group">
-                            <label class="control-sidebar-subheading">
-                                Expose author name in posts
-                                <input type="checkbox" class="pull-right" checked>
-                            </label>
-                            <p>
-                                Allow the user to show his name in blog posts
-                            </p>
-                        </div>
-                        <!-- /.form-group -->
-                        <h3 class="control-sidebar-heading">Chat Settings</h3>
-                        <div class="form-group">
-                            <label class="control-sidebar-subheading">
-                                Show me as online
-                                <input type="checkbox" class="pull-right" checked>
-                            </label>
-                        </div>
-                        <!-- /.form-group -->
-                        <div class="form-group">
-                            <label class="control-sidebar-subheading">
-                                Turn off notifications
-                                <input type="checkbox" class="pull-right">
-                            </label>
-                        </div>
-                        <!-- /.form-group -->
-                        <div class="form-group">
-                            <label class="control-sidebar-subheading">
-                                Delete chat history
-                                <a href="javascript:void(0)" class="text-red pull-right"><i class="fa fa-trash-o"></i></a>
-                            </label>
-                        </div>
-                        <!-- /.form-group -->
-                    </form>
-                </div>
-                <!-- /.tab-pane -->
-            </div>
-        </aside>
-        <!-- /.control-sidebar -->
-        <!-- Add the sidebar's background. This div must be placed
-       immediately after the control sidebar -->
-        <div class="control-sidebar-bg"></div>
-    </div>
-    <!-- ./wrapper -->
-    <!-- jQuery 2.2.3 -->
-    <script src="/js/jquery.min.js"></script>
-    <!-- Bootstrap 3.3.6 -->
-    <script src="js/bootstrap.min.js"></script>
-    <!-- ChartJS 1.0.1 -->
-    <script src="plugins/chartjs/Chart.min.js"></script>
-    <!-- FastClick -->
-    <script src="plugins/fastclick/fastclick.js"></script>
-    <!-- AdminLTE App -->
-    <script src="js/app.min.js"></script>
-    <!-- AdminLTE for demo purposes -->
-    <script src="js/demo.js"></script>
-    <!-- page script -->
-    <script>
-    $(function () {
-    /* ChartJS
-     * -------
-     * Here we will create a few charts using ChartJS
-     */
+        <!-- ./wrapper -->
+        <!-- jQuery 2.2.3 -->
+        <script src="/js/jquery.min.js"></script>
+        <!-- Bootstrap 3.3.6 -->
+        <script src="js/bootstrap.min.js"></script>
+        <!-- ChartJS 1.0.1 -->
+        <script src="plugins/chartjs/Chart.min.js"></script>
+        <!-- FastClick -->
+        <script src="plugins/fastclick/fastclick.js"></script>
+        <!-- AdminLTE App -->
+        <script src="js/app.min.js"></script>
+        <!-- AdminLTE for demo purposes -->
+        <script src="js/demo.js"></script>
+        <!-- page script -->
+        <script>
+        $(function() {
+            /* ChartJS
+             * -------
+             * Here we will create a few charts using ChartJS
+             */
 
-    //--------------
-    //- AREA CHART -
-    //--------------
+            //--------------
+            //- AREA CHART -
+            //--------------
 
-    // Get context with jQuery - using jQuery's .get() method.
-    //var areaChartCanvas = $("#areaChart").get(0).getContext("2d");
-    // This will get the first returned node in the jQuery collection.
-    //var areaChart = new Chart(areaChartCanvas);
+            // Get context with jQuery - using jQuery's .get() method.
+            //var areaChartCanvas = $("#areaChart").get(0).getContext("2d");
+            // This will get the first returned node in the jQuery collection.
+            //var areaChart = new Chart(areaChartCanvas);
 
-    var areaChartData = {
-      labels: ["January", "February", "March", "April", "May", "June", "July"],
-      datasets: [
-        {
-          label: "Electronics",
-          fillColor: "rgba(210, 214, 222, 1)",
-          strokeColor: "rgba(210, 214, 222, 1)",
-          pointColor: "rgba(210, 214, 222, 1)",
-          pointStrokeColor: "#c1c7d1",
-          pointHighlightFill: "#fff",
-          pointHighlightStroke: "rgba(220,220,220,1)",
-          data: [65, 59, 80, 81, 56, 55, 40]
-        },
-        {
-          label: "Digital Goods",
-          fillColor: "rgba(60,141,188,0.9)",
-          strokeColor: "rgba(60,141,188,0.8)",
-          pointColor: "#3b8bba",
-          pointStrokeColor: "rgba(60,141,188,1)",
-          pointHighlightFill: "#fff",
-          pointHighlightStroke: "rgba(60,141,188,1)",
-          data: [28, 48, 40, 19, 86, 27, 90]
-        }
-      ]
-    };
+            var weights = <%- JSON.stringify(weights) %>;
+            console.log(weights);
 
-    var areaChartOptions = {
-      //Boolean - If we should show the scale at all
-      showScale: true,
-      //Boolean - Whether grid lines are shown across the chart
-      scaleShowGridLines: false,
-      //String - Colour of the grid lines
-      scaleGridLineColor: "rgba(0,0,0,.05)",
-      //Number - Width of the grid lines
-      scaleGridLineWidth: 1,
-      //Boolean - Whether to show horizontal lines (except X axis)
-      scaleShowHorizontalLines: true,
-      //Boolean - Whether to show vertical lines (except Y axis)
-      scaleShowVerticalLines: true,
-      //Boolean - Whether the line is curved between points
-      bezierCurve: true,
-      //Number - Tension of the bezier curve between points
-      bezierCurveTension: 0.3,
-      //Boolean - Whether to show a dot for each point
-      pointDot: false,
-      //Number - Radius of each point dot in pixels
-      pointDotRadius: 4,
-      //Number - Pixel width of point dot stroke
-      pointDotStrokeWidth: 1,
-      //Number - amount extra to add to the radius to cater for hit detection outside the drawn point
-      pointHitDetectionRadius: 20,
-      //Boolean - Whether to show a stroke for datasets
-      datasetStroke: true,
-      //Number - Pixel width of dataset stroke
-      datasetStrokeWidth: 2,
-      //Boolean - Whether to fill the dataset with a color
-      datasetFill: true,
-      //String - A legend template
-      
-      //Boolean - whether to maintain the starting aspect ratio or not when responsive, if set to false, will take up entire container
-      maintainAspectRatio: true,
-      //Boolean - whether to make the chart responsive to window resizing
-      responsive: true
-    };
+            var dayLabels = [];
+            var weightData = [];
 
-    //Create the line chart
-    //areaChart.Line(areaChartData, areaChartOptions);
+            for (var i = 0; i < weights.length; i++) {
+                dayLabels.push(i);
+                weightData.push(weights[i].weight);
+            }
 
-    //-------------
-    //- LINE CHART -
-    //--------------
-    var lineChartCanvas = $("#lineChart").get(0).getContext("2d");
-    var lineChart = new Chart(lineChartCanvas);
-    var lineChartOptions = areaChartOptions;
-    lineChartOptions.datasetFill = false;
-    lineChart.Line(areaChartData, lineChartOptions);
+            var areaChartData = {
+                labels: dayLabels,
+                datasets: [{
+                    label: "Weight",
+                    fillColor: "rgba(60,141,188,0.9)",
+                    strokeColor: "rgba(60,141,188,0.8)",
+                    pointColor: "#3b8bba",
+                    pointStrokeColor: "rgba(60,141,188,1)",
+                    pointHighlightFill: "#fff",
+                    pointHighlightStroke: "rgba(60,141,188,1)",
+                    data: weightData
+                }]
+            };
 
-    //-------------
-    //- PIE CHART -
-    //-------------
-    // Get context with jQuery - using jQuery's .get() method.
-    var pieChartCanvas = $("#pieChart").get(0).getContext("2d");
-    var pieChart = new Chart(pieChartCanvas);
-    var PieData = [
-      {
-        value: 700,
-        color: "#f56954",
-        highlight: "#f56954",
-        label: "Chrome"
-      },
-      {
-        value: 500,
-        color: "#00a65a",
-        highlight: "#00a65a",
-        label: "IE"
-      },
-      {
-        value: 400,
-        color: "#f39c12",
-        highlight: "#f39c12",
-        label: "FireFox"
-      }
-    ];
-    
-    var pieOptions = {
-      //Boolean - Whether we should show a stroke on each segment
-      segmentShowStroke: true,
-      //String - The colour of each segment stroke
-      segmentStrokeColor: "#fff",
-      //Number - The width of each segment stroke
-      segmentStrokeWidth: 2,
-      //Number - The percentage of the chart that we cut out of the middle
-      percentageInnerCutout: 0, // This is 0 for Pie charts
-      //Number - Amount of animation steps
-      animationSteps: 100,
-      //String - Animation easing effect
-      animationEasing: "easeOutBounce",
-      //Boolean - Whether we animate the rotation of the Doughnut
-      animateRotate: true,
-      //Boolean - Whether we animate scaling the Doughnut from the centre
-      animateScale: false,
-      //Boolean - whether to make the chart responsive to window resizing
-      responsive: true,
-      // Boolean - whether to maintain the starting aspect ratio or not when responsive, if set to false, will take up entire container
-      maintainAspectRatio: true
-      //String - A legend template
-    };
-    //Create pie or douhnut chart
-    // You can switch between pie and douhnut using the method below.
-    pieChart.Pie(PieData, pieOptions);
+            var areaChartOptions = {
+                //Boolean - If we should show the scale at all
+                showScale: true,
+                //Boolean - Whether grid lines are shown across the chart
+                scaleShowGridLines: false,
+                //String - Colour of the grid lines
+                scaleGridLineColor: "rgba(0,0,0,.05)",
+                //Number - Width of the grid lines
+                scaleGridLineWidth: 1,
+                //Boolean - Whether to show horizontal lines (except X axis)
+                scaleShowHorizontalLines: true,
+                //Boolean - Whether to show vertical lines (except Y axis)
+                scaleShowVerticalLines: true,
+                //Boolean - Whether the line is curved between points
+                bezierCurve: true,
+                //Number - Tension of the bezier curve between points
+                bezierCurveTension: 0.3,
+                //Boolean - Whether to show a dot for each point
+                pointDot: false,
+                //Number - Radius of each point dot in pixels
+                pointDotRadius: 4,
+                //Number - Pixel width of point dot stroke
+                pointDotStrokeWidth: 1,
+                //Number - amount extra to add to the radius to cater for hit detection outside the drawn point
+                pointHitDetectionRadius: 20,
+                //Boolean - Whether to show a stroke for datasets
+                datasetStroke: true,
+                //Number - Pixel width of dataset stroke
+                datasetStrokeWidth: 2,
+                //Boolean - Whether to fill the dataset with a color
+                datasetFill: true,
+                //String - A legend template
 
-    //-------------
-    //- BAR CHART -
-    //-------------
-    var barChartCanvas = $("#barChart").get(0).getContext("2d");
-    var barChart = new Chart(barChartCanvas);
-    var barChartData = areaChartData;
-    barChartData.datasets[1].fillColor = "#00a65a";
-    barChartData.datasets[1].strokeColor = "#00a65a";
-    barChartData.datasets[1].pointColor = "#00a65a";
-    var barChartOptions = {
-      //Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value
-      scaleBeginAtZero: true,
-      //Boolean - Whether grid lines are shown across the chart
-      scaleShowGridLines: true,
-      //String - Colour of the grid lines
-      scaleGridLineColor: "rgba(0,0,0,.05)",
-      //Number - Width of the grid lines
-      scaleGridLineWidth: 1,
-      //Boolean - Whether to show horizontal lines (except X axis)
-      scaleShowHorizontalLines: true,
-      //Boolean - Whether to show vertical lines (except Y axis)
-      scaleShowVerticalLines: true,
-      //Boolean - If there is a stroke on each bar
-      barShowStroke: true,
-      //Number - Pixel width of the bar stroke
-      barStrokeWidth: 2,
-      //Number - Spacing between each of the X value sets
-      barValueSpacing: 5,
-      //Number - Spacing between data sets within X values
-      barDatasetSpacing: 1,
-      //Boolean - whether to make the chart responsive
-      responsive: true,
-      maintainAspectRatio: true
-    };
+                //Boolean - whether to maintain the starting aspect ratio or not when responsive, if set to false, will take up entire container
+                maintainAspectRatio: true,
+                //Boolean - whether to make the chart responsive to window resizing
+                responsive: true
+            };
 
-    barChartOptions.datasetFill = false;
-    barChart.Bar(barChartData, barChartOptions);
-});
-    </script>
+            //Create the line chart
+            //areaChart.Line(areaChartData, areaChartOptions);
+
+            //-------------
+            //- LINE CHART -
+            //--------------
+            var lineChartCanvas = $("#lineChart").get(0).getContext("2d");
+            var lineChart = new Chart(lineChartCanvas);
+            var lineChartOptions = areaChartOptions;
+            lineChartOptions.datasetFill = false;
+            lineChart.Line(areaChartData, lineChartOptions);
+
+            //-------------
+            //- PIE CHART -
+            //-------------
+            // Get context with jQuery - using jQuery's .get() method.
+            var pieChartCanvas = $("#pieChart").get(0).getContext("2d");
+            var pieChart = new Chart(pieChartCanvas);
+            var PieData = [{
+                value: <%= nutrition.maxFats %>,
+                color: "#f56954",
+                highlight: "#f56954",
+                label: "Fats"
+            }, {
+                value: <%= nutrition.maxProtein %>,
+                color: "#00a65a",
+                highlight: "#00a65a",
+                label: "Proteins"
+            }, {
+                value: <%= nutrition.maxCarbs %>,
+                color: "#f39c12",
+                highlight: "#f39c12",
+                label: "Carbs"
+            }];
+
+            var pieOptions = {
+                //Boolean - Whether we should show a stroke on each segment
+                segmentShowStroke: true,
+                //String - The colour of each segment stroke
+                segmentStrokeColor: "#fff",
+                //Number - The width of each segment stroke
+                segmentStrokeWidth: 2,
+                //Number - The percentage of the chart that we cut out of the middle
+                percentageInnerCutout: 0, // This is 0 for Pie charts
+                //Number - Amount of animation steps
+                animationSteps: 100,
+                //String - Animation easing effect
+                animationEasing: "easeOutBounce",
+                //Boolean - Whether we animate the rotation of the Doughnut
+                animateRotate: true,
+                //Boolean - Whether we animate scaling the Doughnut from the centre
+                animateScale: false,
+                //Boolean - whether to make the chart responsive to window resizing
+                responsive: true,
+                // Boolean - whether to maintain the starting aspect ratio or not when responsive, if set to false, will take up entire container
+                maintainAspectRatio: true
+                    //String - A legend template
+            };
+            //Create pie or douhnut chart
+            // You can switch between pie and douhnut using the method below.
+            pieChart.Pie(PieData, pieOptions);
+        });
+        </script>
+        <script>
+        $(document).ready(function() {
+            $("#uploadBut").click(function() {
+                $("#shortModal").modal('show');
+            });
+
+            $("#weightBut").click(function() {
+                $("#weightModal").modal('show');
+            });
+        });
+        </script>
 </body>
 
 </html>
