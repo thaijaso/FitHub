@@ -101,7 +101,7 @@
                 <div class="navbar-custom-menu">
                     <ul class="nav navbar-nav">
                         <li>
-                            <a href="/reset-calories"><i class="fa fa-history"></i> Reset </a>
+                            <a href="/reset-nutrition"><i class="fa fa-history"></i> Reset </a>
                         </li>
                         <!-- User Account: style can be found in dropdown.less -->
                         <li class="dropdown user user-menu">
@@ -313,10 +313,10 @@
                                 <span class="info-box-text">Carbs</span>
                                 <span class="info-box-number"><%= nutrition.curCarbs%>/<%=nutrition.maxCarbs%> g</span>
                                 <div class="progress">
-                                    <div class="progress-bar" style="width: <%= Math.round(nutrition.curProtein * 100 / nutrition.maxProtein)%>%"></div>
+                                    <div class="progress-bar" style="width: <%= Math.round(nutrition.curCarbs * 100 / nutrition.maxCarbs)%>%"></div>
                                 </div>
                                 <span class="progress-description">
-                                    <%= Math.round(nutrition.curProtein * 100 / nutrition.maxProtein)%>% Completed
+                                    <%= Math.round(nutrition.curCarbs * 100 / nutrition.maxCarbs)%>% Completed
                                 </span>
                             </div>
                             <!-- /.info-box-content -->

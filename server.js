@@ -193,123 +193,19 @@ app.post('/register', (req, res) => {
 
 app.get('/dashboard', (req, res) => {
 	console.log(req.session.user);
+
+	if (req.session.user) {
 	
-	pool.getConnection((err, connection) => {
-		if (err) {
-			console.log(err);
-			res.send(err);
-		}
-		
-		var nutritionQuery = "SELECT * FROM ClientNutrition " +
-					"WHERE clientId = ?";
-
-		var nutritionQueryObj = connection.query(nutritionQuery, [req.session.user.id], (err, rows) => {
+		pool.getConnection((err, connection) => {
 			if (err) {
 				console.log(err);
 				res.send(err);
 			}
-
-			//console.log(rows);
-			var nutrition = rows[0];
-
-			var weightQuery = "SELECT * FROM WeightHistory " +
-							  "WHERE clientId = ?";
-
-			var weightQueryObj = connection.query(weightQuery, [req.session.user.id], (err, rows) => {
-				if (err) {
-					console.log(err);
-					res.send(err);
-				}
-
-				var weights = rows;
-
-				var data = {
-					user: req.session.user,
-					nutrition: nutrition,
-					weights: weights
-				};
-
-				res.render('dashboard.ejs', data);
-			});
-			console.log(weightQueryObj.sql);
-		});
-
-		console.log(nutritionQueryObj.sql);
-	});
-});
-
-app.post('/log-weight', (req, res) => {
-	var weight = req.body.weight;
-	console.log(weight);
-
-	pool.getConnection((err, connection) => {
-		if (err) {
-			console.log(err);
-			res.send(err);
-		}
-
-		var query = "INSERT INTO WeightHistory (clientId, createdAt, weight) " +
-					"VALUES (?, NOW(), ?)";
-
-		var queryObj = connection.query(query, [req.session.user.id, weight], (err, rows) => {
-			if (err) {
-				console.log(err);
-				res.send(err);
-			}
-
-			res.redirect('/dashboard');
-		});	
-		 console.log(queryObj.sql);
-	});
-});
-
-app.get('/coverflow', (req, res) => {
-	pool.getConnection((err, connection) => {
-
-		if (err) {
-			console.log(err);
-			res.send(err);
-		}
-
-		var query = "SELECT * FROM Client";
-		
-		connection.query(query, (err, rows) => {
 			
-			
-			var data = {
-				user: req.session.user,
-				clients: rows
-			}
-
-			res.render('coverflow.ejs', data);
-			connection.release();
-		});
-	});
-});
-
-app.get('/client/:id', (req, res) => {
-	console.log(req.params);
-
-	pool.getConnection((err, connection) => {
-		if (err) {
-			console.log(err);
-			res.send(err);
-		}
-
-		var clientQuery = "SELECT * FROM Client WHERE id = ?";
-
-		var clientQueryObj = connection.query(clientQuery, [req.params.id], (err, rows) => {
-			if (err) {
-				console.log(err);
-				res.send(err);
-			}
-
-			var client = rows[0];
-
 			var nutritionQuery = "SELECT * FROM ClientNutrition " +
 						"WHERE clientId = ?";
 
-			var nutritionQueryObj = connection.query(nutritionQuery, [req.params.id], (err, rows) => {
+			var nutritionQueryObj = connection.query(nutritionQuery, [req.session.user.id], (err, rows) => {
 				if (err) {
 					console.log(err);
 					res.send(err);
@@ -321,7 +217,7 @@ app.get('/client/:id', (req, res) => {
 				var weightQuery = "SELECT * FROM WeightHistory " +
 								  "WHERE clientId = ?";
 
-				var weightQueryObj = connection.query(weightQuery, [req.params.id], (err, rows) => {
+				var weightQueryObj = connection.query(weightQuery, [req.session.user.id], (err, rows) => {
 					if (err) {
 						console.log(err);
 						res.send(err);
@@ -329,36 +225,180 @@ app.get('/client/:id', (req, res) => {
 
 					var weights = rows;
 
-					var clientsQuery = "SELECT * FROM Client";
+					var data = {
+						user: req.session.user,
+						nutrition: nutrition,
+						weights: weights
+					};
 
-					connection.query(clientsQuery, (err, rows) => {
+					res.render('dashboard.ejs', data);
+				});
+				console.log(weightQueryObj.sql);
+			});
+
+			console.log(nutritionQueryObj.sql);
+		});
+	} else {
+		res.redirect('/');
+	}
+});
+
+app.post('/log-weight', (req, res) => {
+	if (req.session.user) {
+		var weight = req.body.weight;
+		console.log(weight);
+
+		pool.getConnection((err, connection) => {
+			if (err) {
+				console.log(err);
+				res.send(err);
+			}
+
+			var query = "INSERT INTO WeightHistory (clientId, createdAt, weight) " +
+						"VALUES (?, NOW(), ?)";
+
+			var queryObj = connection.query(query, [req.session.user.id, weight], (err, rows) => {
+				if (err) {
+					console.log(err);
+					res.send(err);
+				}
+
+				res.redirect('/dashboard');
+			});	
+			 console.log(queryObj.sql);
+		});
+	} else {
+		res.redirect('/');
+	}
+});
+
+app.get('/reset-nutrition', (req, res) => {
+	if (req.session.user) {
+		pool.getConnection((err, connection) => {
+			var query = "UPDATE ClientNutrition " +
+						"SET curCalories = 0, curWater = 0, curProtein = 0, curFats = 0, curCarbs = 0 " +
+						"WHERE clientId = ? ";
+
+			var queryObj = connection.query(query, [req.session.user.id], (err, rows) => {
+				if (err) {
+					console.log(err);
+					res.send(err);
+				}
+
+				console.log('success reseting calories');
+				res.redirect('/dashboard');
+			});	
+			console.log(queryObj.sql);
+		});
+	} else {
+		res.redirect('/');
+	}
+});
+
+app.get('/coverflow', (req, res) => {
+	if (req.session.user) {
+		pool.getConnection((err, connection) => {
+
+			if (err) {
+				console.log(err);
+				res.send(err);
+			}
+
+			var query = "SELECT * FROM Client";
+			
+			connection.query(query, (err, rows) => {
+				
+				
+				var data = {
+					user: req.session.user,
+					clients: rows
+				}
+
+				res.render('coverflow.ejs', data);
+				connection.release();
+			});
+		});
+	} else {
+		res.redirect('/');
+	}
+});
+
+app.get('/client/:id', (req, res) => {
+	if (req.session.user) {
+		console.log(req.params);
+
+		pool.getConnection((err, connection) => {
+			if (err) {
+				console.log(err);
+				res.send(err);
+			}
+
+			var clientQuery = "SELECT * FROM Client WHERE id = ?";
+
+			var clientQueryObj = connection.query(clientQuery, [req.params.id], (err, rows) => {
+				if (err) {
+					console.log(err);
+					res.send(err);
+				}
+
+				var client = rows[0];
+
+				var nutritionQuery = "SELECT * FROM ClientNutrition " +
+							"WHERE clientId = ?";
+
+				var nutritionQueryObj = connection.query(nutritionQuery, [req.params.id], (err, rows) => {
+					if (err) {
+						console.log(err);
+						res.send(err);
+					}
+
+					//console.log(rows);
+					var nutrition = rows[0];
+
+					var weightQuery = "SELECT * FROM WeightHistory " +
+									  "WHERE clientId = ?";
+
+					var weightQueryObj = connection.query(weightQuery, [req.params.id], (err, rows) => {
 						if (err) {
 							console.log(err);
 							res.send(err);
 						}
 
-						var clients = rows;
+						var weights = rows;
 
-						var data = {
-							user: req.session.user,
-							client: client,
-							nutrition: nutrition,
-							weights: weights,
-							clients: clients
-						};
+						var clientsQuery = "SELECT * FROM Client";
 
-						res.render('client.ejs', data);
+						connection.query(clientsQuery, (err, rows) => {
+							if (err) {
+								console.log(err);
+								res.send(err);
+							}
 
+							var clients = rows;
+
+							var data = {
+								user: req.session.user,
+								client: client,
+								nutrition: nutrition,
+								weights: weights,
+								clients: clients
+							};
+
+							res.render('client.ejs', data);
+
+						});
 					});
+
+					console.log(weightQueryObj.sql);
 				});
 
-				console.log(weightQueryObj.sql);
+				console.log(nutritionQueryObj.sql);
+
 			});
-
-			console.log(nutritionQueryObj.sql);
-
 		});
-	});
+	} else {
+		res.redirect('/');
+	}
 });
 
 app.get('/food', (req, res) => {
@@ -469,48 +509,52 @@ app.get('/diary', (req, res) => {
 });
 
 app.post('/upload-photo', upload.single('avatar'), function(req, res)  {
-	console.log(req.file);
-	var tempPath = req.file.path;
-	var targetPath = 'public/img/' + req.file.originalname;
+	if (req.session.user) {
+		console.log(req.file);
+		var tempPath = req.file.path;
+		var targetPath = 'public/img/' + req.file.originalname;
 
-	var src = fs.createReadStream(tempPath);
-	var dest = fs.createWriteStream(targetPath);
-	src.pipe(dest);
-	
-	src.on('end', function() {
-		pool.getConnection(function(err, connection) {
-			if (err) {
-				console.log(err);
-				res.send(err);
-			}
-
-			var filePath = 'img/' + req.file.originalname;
-			var clientId = req.body.clientId;
-
-			var query = connection.query("UPDATE Client SET profileImgPath = ? WHERE id = ?", 
-			[filePath, clientId], function(err, rows) {
-				
+		var src = fs.createReadStream(tempPath);
+		var dest = fs.createWriteStream(targetPath);
+		src.pipe(dest);
+		
+		src.on('end', function() {
+			pool.getConnection(function(err, connection) {
 				if (err) {
 					console.log(err);
 					res.send(err);
 				}
 
-				req.session.user.profileImgPath = filePath;
+				var filePath = 'img/' + req.file.originalname;
+				var clientId = req.body.clientId;
 
-				if (req.session.isTrainer) {
-					res.redirect('/coverflow');
-				} else {
-					res.redirect('/dashboard');
-				}
-				connection.release();
+				var query = connection.query("UPDATE Client SET profileImgPath = ? WHERE id = ?", 
+				[filePath, clientId], function(err, rows) {
+					
+					if (err) {
+						console.log(err);
+						res.send(err);
+					}
+
+					req.session.user.profileImgPath = filePath;
+
+					if (req.session.isTrainer) {
+						res.redirect('/coverflow');
+					} else {
+						res.redirect('/dashboard');
+					}
+					connection.release();
+				});
+				console.log(query.sql);	
 			});
-			console.log(query.sql);	
 		});
-	});
 
-	src.on('error', function(err) {
-		res.send('error');
-	});
+		src.on('error', function(err) {
+			res.send('error');
+		});
+	} else {
+		res.redirect('/');
+	}
 });
 
 app.get('/logout', function(req, res) {
