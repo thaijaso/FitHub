@@ -75,6 +75,10 @@ app.get('/', (req, res) => {
     res.render('login.ejs');
 });
 
+app.get('/login', (req, res) => {
+    res.render('login.ejs');
+});
+
 const trainerUsername = 'trainer';
 const trainerPassword = 'password';
 
@@ -533,29 +537,37 @@ app.post('/deleteFood', (req, res) => {
 });
 
 app.get('/diary', (req, res) => {
+    if (req.session.user) {
+        var id = req.session.user.id;
 
-    var query = "SELECT Client.id, FoodDiary.id, FoodDiary_Has_Food.portions, Food.foodName FROM Client " +
-        "JOIN FoodDiary ON Client.id = FoodDiary.clientId " +
-        "JOIN FoodDiary_Has_Food  ON FoodDiary.id = FoodDiary_Has_Food.foodDiaryId " +
-        "JOIN Food ON FoodDiary_Has_Food.foodId = Food.id";
+        var query = "SELECT Client.id, FoodDiary.id, FoodDiary_Has_Food.portions, Food.foodName FROM Client " +
+            "JOIN FoodDiary ON Client.id = FoodDiary.clientId " +
+            "JOIN FoodDiary_Has_Food  ON FoodDiary.id = FoodDiary_Has_Food.foodDiaryId " +
+            "JOIN Food ON FoodDiary_Has_Food.foodId = Food.id WHERE Client.id = ?";
 
-    pool.getConnection(function(error, connection) {
-        connection.query(query, function(err, rows) {
+        pool.getConnection(function(error, connection) {
+            connection.query(query, [id], function(err, rows) {
 
-            if (err) {
-                console.log(err);
-            } else {
-                var data = {
-                    diary: rows
+                if (err) {
+                    console.log(err);
+                } else {
+                    var data = {
+                        diary: rows
+                    }
+
+                    res.render('diary.ejs', data);
+
                 }
 
-                res.render('diary.ejs', data);
-
-            }
+            });
 
         });
 
-    });
+    } else {
+        res.redirect('/login');
+    }
+
+
 });
 
 
