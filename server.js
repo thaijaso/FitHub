@@ -546,10 +546,13 @@ app.get('/diary', (req, res) => {
     if (req.session.user) {
         var id = req.session.user.id;
 
-        var query = "SELECT Client.id, FoodDiary.id, FoodDiary_Has_Food.portions, Food.foodName FROM Client " +
-            "JOIN FoodDiary ON Client.id = FoodDiary.clientId " +
-            "JOIN FoodDiary_Has_Food  ON FoodDiary.id = FoodDiary_Has_Food.foodDiaryId " +
-            "JOIN Food ON FoodDiary_Has_Food.foodId = Food.id WHERE Client.id = ?";
+        var query = "SELECT Client.id, FoodDiary.id, FoodDiary_Has_Food.portions, " +
+                        "Food.foodName, DATE_FORMAT(createdAt, '%Y-%m-%dT%TZ') AS createdAt " +
+                    "FROM Client " +
+                    "JOIN FoodDiary ON Client.id = FoodDiary.clientId " +
+                    "JOIN FoodDiary_Has_Food  ON FoodDiary.id = FoodDiary_Has_Food.foodDiaryId " +
+                    "JOIN Food ON FoodDiary_Has_Food.foodId = Food.id WHERE Client.id = ? " +
+                    "ORDER BY createdAt DESC";
 
         pool.getConnection(function(error, connection) {
             connection.query(query, [id], function(err, rows) {
