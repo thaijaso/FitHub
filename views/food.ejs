@@ -862,8 +862,9 @@
 
 
                 var portion = parseInt($('#quantity').val());
+                
                 $.ajax({
-                    url: '/addToDiary',
+                    url: '/eatFood',
                     data: {
                         foodId: foodId,
                         name: name,
