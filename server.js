@@ -536,12 +536,8 @@ app.post('/deleteFood', (req, res) => {
                 res.redirect('/food');
 
             }
-
         });
-
     });
-
-
 });
 
 app.get('/diary', (req, res) => {
@@ -575,70 +571,154 @@ app.get('/diary', (req, res) => {
     } else {
         res.redirect('/login');
     }
-
-
 });
 
 
-// app.post('/diary', ())
-
-app.post('/addToDiary', (req, res) => {
-
-
+app.post('/eatFood', (req, res) => {
     if (req.session.user) {
-        console.dir(req.body);
+
         var clientId = req.session.user.id;
         var foodId = req.body.foodId;
         var portions = req.body.portions;
-        console.log("user Id: " + req.session.user.id);
-        console.log("foodId: " + foodId);
-        console.log("portions: " + portions);
+        
+        pool.getConnection((err, connection) => {
+            async.waterfall([
+                insertIntoFoodDiary(connection, clientId, foodId, portions),
+                insertIntoFoodDiary_Has_Food,
+                getClientNutrition,
+                updateClientNutrition
 
-        var query1 = "INSERT INTO FoodDiary (clientId) VALUES(?)";
-        var query2 = "INSERT INTO FoodDiary_Has_Food (foodDiaryId, foodId, portions) " +
-            "VALUES(?, ?, ?)";
-
-        pool.getConnection(function(error, connection) {
-            connection.query(query1, [clientId], function(err, rows) {
-
-                if (err) {
-                    console.log(err);
-                } else {
-                    pool.getConnection(function(error, connection) {
-                        connection.query(query2, [rows.insertId, foodId, portions], function(err, rows) {
-
-                            if (err) {
-                                console.log(err);
-                            } else {
-
-                                console.log("Added food into diary!");
-
-                                res.redirect('/food');
-
-
-                            }
-
-                        });
-
-                    });
-
-
-                }
-
+            ], (err, connection, results) => {
+                console.log('end async');
+                res.redirect('/food');
             });
-
         });
-
     } else {
-        res.redirect('/login');
+        res.redirect('/');
     }
-
-
-
-    // console.log(req.session.user.id);
-
-
 });
+
+function insertIntoFoodDiary(connection, clientId, foodId, portions) {
+    var query = "INSERT INTO FoodDiary (clientId, createdAt) VALUES(?, NOW())";
+
+    //console.log(clientId);
+    //console.log(foodId);
+    //console.log(portions);
+
+    return function(callback) {
+        connection.query(query, [clientId], (err, rows) => {
+            if (err) {
+                console.log(err);
+                callback(err);
+                return;
+            }
+
+            var results = {
+                clientId : clientId,
+                foodId : foodId,
+                portions: portions,
+                lastInsertId: rows.insertId
+            };
+
+            console.log('inserted Food into Diary');
+            callback(null, connection, results);
+        });
+    }
+}
+
+function insertIntoFoodDiary_Has_Food(connection, results, callback) {
+    var query = "INSERT INTO FoodDiary_Has_Food (foodDiaryId, foodId, portions) " +
+                "VALUES (?, ?, ?)";
+
+    //console.log(results);
+
+    var lastInsertId = results.lastInsertId;
+    var foodId = results.foodId;
+    var portions = results.portions;
+
+    connection.query(query, [lastInsertId, foodId, portions], (err, rows) => {
+        if (err) {
+            console.log(err);
+            callback(err);
+            return;
+        }
+
+        console.log('inserted Food into Food_Has_Diary');
+        callback(null, connection, results);
+    });
+}
+
+function getClientNutrition(connection, results, callback) {
+    var query = "SELECT * FROM ClientNutrition WHERE clientId = ?";
+    var clientId = results.clientId;
+
+    connection.query(query, [clientId], (err, rows) => {
+        if (err) {
+            console.log(err);
+            callback(err);
+            return;
+        }
+
+        results['clientNutrition'] = rows[0];
+
+        console.log('got client nutrition');
+        callback(null, connection, results);
+    });
+}
+
+function updateClientNutrition(connection, results, callback) {
+    var foodQuery = "SELECT * FROM Food WHERE id = ?";
+
+    var foodId = results.foodId;
+
+    connection.query(foodQuery, [foodId], (err, rows) => {
+        if (err) {
+            console.log(err);
+            callback(err);
+            return;
+        }
+
+        var food = rows[0];
+        var portions = results.portions;
+
+        //client current nutrition values
+        var curCalories = results.clientNutrition.curCalories;
+        var curProteins = results.clientNutrition.curProtein;
+        var curFats = results.clientNutrition.curFats;
+        var curCarbs = results.clientNutrition.curCarbs;
+       
+        //calculate total macro nutrients for the food consumed
+        var caloriesConsumed = food.calories * portions;
+        var proteinConsumed = food.protein * portions;
+        var fatConsumed = food.fat * portions;
+        var carbsConsumed = food.carbs * portions;
+
+
+        curCalories = curCalories + caloriesConsumed;
+        curProteins = curProteins + proteinConsumed;
+        curFats = curFats + fatConsumed;
+        curCarbs = curCarbs + carbsConsumed;
+
+        console.log('cur cals: ' + curCalories);
+        console.log('curProteins: ' + curProteins);
+        console.log('curFats: ' + fatConsumed);
+        console.log('curCarbs: ' + curCarbs);
+
+        var nutritionQuery = "UPDATE ClientNutrition " +
+                             "SET curCalories = ?, curProtein = ?, curFats = ?, curCarbs = ? " +
+                             "WHERE clientId = ?";
+
+        connection.query(nutritionQuery, [curCalories, curProteins, curFats, curCarbs, results.clientId], (err, rows) => {
+            if (err) {
+                console.log(err);
+                callback(err);
+                return;
+            }
+            console.log('updated ClientNutrition');
+            callback(null, connection, results);
+        });
+    });
+}
 
 app.get('/coverflow', (req, res) => {
     pool.getConnection((err, connection) => {
@@ -661,6 +741,7 @@ app.get('/coverflow', (req, res) => {
         });
     });
 });
+
 app.post('/upload-photo', upload.single('avatar'), function(req, res) {
     if (req.session.user) {
         console.log(req.file);
