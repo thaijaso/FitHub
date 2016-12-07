@@ -55,6 +55,10 @@ app.use('/plugins/iCheck', express.static(__dirname + '/plugins/iCheck'));
 app.use('/css', express.static(__dirname + '/node_modules/bootstrap/dist/css'));
 app.use('/js', express.static(__dirname + '/node_modules/bootstrap/dist/js'));
 app.use('/js', express.static(__dirname + '/node_modules/jquery/dist'));
+app.use('/js', express.static(__dirname + '/node_modules/moment/src'));
+app.use('/js', express.static(__dirname + '/node_modules/@gigwalk/livestamp'));
+
+
 
 //middleware for passing data bewteen routes
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -418,7 +422,9 @@ app.get('/food', (req, res) => {
             } else {
 
                 var data = {
-                    'food': rows
+                     food: rows,
+                     user: req.session.user
+
                 }
                 res.render('food.ejs', data);
 
@@ -552,7 +558,8 @@ app.get('/diary', (req, res) => {
                     console.log(err);
                 } else {
                     var data = {
-                        diary: rows
+                        diary: rows,
+                        user: req.session.user
                     }
 
                     res.render('diary.ejs', data);

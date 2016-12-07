@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>NutritionTracker | Dashboard</title>
+    <title>FitHub | Dashboard</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <!-- Bootstrap 3.3.6 -->
@@ -106,7 +106,8 @@
                         <!-- User Account: style can be found in dropdown.less -->
                         <li class="dropdown user user-menu">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                <img src="<%= user.profileImgPath %>" class="user-image" alt="User Image">
+                                    <img src="<%= user.profileImgPath %>" class="user-image" alt="User Image">
+
                                 <span class="hidden-xs"><%= user.firstName %> <%= user.lastName %></span>
                             </a>
                             <ul class="dropdown-menu">
@@ -171,7 +172,7 @@
                 <ul class="sidebar-menu">
                     <li class="header">MAIN NAVIGATION</li>
                     <li class="active">
-                        <a href="/client-dashboard">
+                        <a href="/dashboard">
                             <i class="fa fa fa-dashboard"></i>
                             <span>Dashboard</span>
                             <span class="pull-right-container">
@@ -181,14 +182,14 @@
                     </li>
                     <li>
                         <a href="/food">
-                            <i class="fa fa fa-dashboard"></i>
+                            <i class="fa fa fa-cutlery"></i>
                             <span>Food</span>
                             <span class="pull-right-container"></span>
                         </a>
                     </li>
-                    <li>
+                    <li class="active">
                         <a href="/diary">
-                            <i class="fa fa fa-dashboard"></i>
+                            <i class="fa fa fa-book"></i>
                             <span>Diary</span>
                             <span class="pull-right-container"></span>
                         </a>
