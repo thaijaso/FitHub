@@ -402,6 +402,8 @@ app.get('/client/:id', (req, res) => {
 });
 
 app.get('/food', (req, res) => {
+	console.log('/food user: ' + req.session.user);
+
     var food = "SELECT * FROM Food";
     
     pool.getConnection((err, connection) => {
