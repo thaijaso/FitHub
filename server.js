@@ -35,6 +35,7 @@ app.use('/fonts', express.static(__dirname + '/public/fonts'));
 app.use('/public', express.static(__dirname + '/public'));
 
 
+
 //serve static css, image, and js files from admin template 
 app.use('/plugins/iCheck/flat/', express.static(__dirname + '/plugins/iCheck/flat/'));
 app.use('/plugins/morris', express.static(__dirname + '/plugins/morris'));
@@ -55,8 +56,9 @@ app.use('/plugins/iCheck', express.static(__dirname + '/plugins/iCheck'));
 app.use('/css', express.static(__dirname + '/node_modules/bootstrap/dist/css'));
 app.use('/js', express.static(__dirname + '/node_modules/bootstrap/dist/js'));
 app.use('/js', express.static(__dirname + '/node_modules/jquery/dist'));
-app.use('/js', express.static(__dirname + '/node_modules/moment/src'));
-app.use('/js', express.static(__dirname + '/node_modules/@gigwalk/livestamp'));
+// app.use('/js', express.static(__dirname + '/node_modules/moment/src'));
+// app.use('/js', express.static(__dirname + '/node_modules/@gigwalk/livestamp'));
+app.use('/js', express.static(__dirname + '/node_modules/timeago'));
 
 
 
