@@ -1,0 +1,187 @@
+-- MySQL Workbench Forward Engineering
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
+
+-- -----------------------------------------------------
+-- Schema NutritionTracker
+-- -----------------------------------------------------
+
+-- -----------------------------------------------------
+-- Schema NutritionTracker
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `NutritionTracker` DEFAULT CHARACTER SET utf8 ;
+USE `NutritionTracker` ;
+
+-- -----------------------------------------------------
+-- Table `NutritionTracker`.`Trainer`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `NutritionTracker`.`Trainer` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `username` VARCHAR(255) NULL,
+  `password` VARCHAR(255) NULL,
+  `firstName` VARCHAR(255) NULL,
+  `lastName` VARCHAR(255) NULL,
+  PRIMARY KEY (`id`));
+
+
+
+-- -----------------------------------------------------
+-- Table `NutritionTracker`.`Client`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `NutritionTracker`.`Client` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `trainerId` INT NOT NULL,
+  `username` VARCHAR(255) NULL,
+  `password` VARCHAR(255) NULL,
+  `firstName` VARCHAR(255) NULL,
+  `lastName` VARCHAR(255) NULL,
+  `dateJoined` DATETIME NULL,
+  `originalWeight` DOUBLE NULL,
+  `goalWeight` DOUBLE NULL,
+  `clientType` ENUM('Fat', 'Muscle') NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_Client_Trainer1_idx` (`trainerId` ASC),
+  CONSTRAINT `fk_Client_Trainer1`
+    FOREIGN KEY (`trainerId`)
+    REFERENCES `NutritionTracker`.`Trainer` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);
+
+
+-- -----------------------------------------------------
+-- Table `NutritionTracker`.`ClientNutrition`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `NutritionTracker`.`ClientNutrition` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `clientId` INT NOT NULL,
+  `maxCalories` INT NULL,
+  `minWater` INT NULL,
+  `maxProtein` INT NULL,
+  `maxFats` INT NULL,
+  `maxCarbs` INT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_ClientNutrition_Client_idx` (`clientId` ASC),
+  CONSTRAINT `fk_ClientNutrition_Client`
+    FOREIGN KEY (`clientId`)
+    REFERENCES `NutritionTracker`.`Client` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);
+
+
+-- -----------------------------------------------------
+-- Table `NutritionTracker`.`Food`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `NutritionTracker`.`Food` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(255) NULL,
+  `description` VARCHAR(255) NULL,
+  `category` VARCHAR(255) NULL,
+  `calories` INT NULL,
+  `fat` INT NULL,
+  `protein` INT NULL,
+  `carbs` INT NULL,
+  PRIMARY KEY (`id`));
+
+
+-- -----------------------------------------------------
+-- Table `NutritionTracker`.`FoodDiary`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `NutritionTracker`.`FoodDiary` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `clientId` INT NOT NULL,
+  `createdAt` DATETIME NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_FoodDiary_Client1_idx` (`clientId` ASC),
+  CONSTRAINT `fk_FoodDiary_Client1`
+    FOREIGN KEY (`clientId`)
+    REFERENCES `NutritionTracker`.`Client` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);
+
+
+-- -----------------------------------------------------
+-- Table `NutritionTracker`.`WeightHistory`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `NutritionTracker`.`WeightHistory` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `clientId` INT NOT NULL,
+  `createdAt` DATETIME NULL,
+  `weightLost` DOUBLE NULL,
+  `weightGained` DOUBLE NULL,
+  `currentWeight` DOUBLE NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_WeightHistory_Client1_idx` (`clientId` ASC),
+  CONSTRAINT `fk_WeightHistory_Client1`
+    FOREIGN KEY (`clientId`)
+    REFERENCES `NutritionTracker`.`Client` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);
+
+
+-- -----------------------------------------------------
+-- Table `NutritionTracker`.`FoodDiary_Has_Food`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `NutritionTracker`.`FoodDiary_Has_Food` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `foodDiaryId` INT NOT NULL,
+  `foodId` INT NOT NULL,
+  `mealNumber` INT NULL,
+  INDEX `fk_FoodDiary_has_Food_Food1_idx` (`foodId` ASC),
+  INDEX `fk_FoodDiary_has_Food_FoodDiary1_idx` (`foodDiaryId` ASC),
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_FoodDiary_has_Food_FoodDiary1`
+    FOREIGN KEY (`foodDiaryId`)
+    REFERENCES `NutritionTracker`.`FoodDiary` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_FoodDiary_has_Food_Food1`
+    FOREIGN KEY (`foodId`)
+    REFERENCES `NutritionTracker`.`Food` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);
+
+
+-- -----------------------------------------------------
+-- Table `NutritionTracker`.`MealPlan`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `NutritionTracker`.`MealPlan` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `clientId` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_MealPlan_Client1_idx` (`clientId` ASC),
+  CONSTRAINT `fk_MealPlan_Client1`
+    FOREIGN KEY (`clientId`)
+    REFERENCES `NutritionTracker`.`Client` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);
+
+
+-- -----------------------------------------------------
+-- Table `NutritionTracker`.`MealPlan_Has_Food`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `NutritionTracker`.`MealPlan_Has_Food` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `mealPlanId` INT NOT NULL,
+  `foodId` INT NOT NULL,
+  `mealNumber` INT NULL,
+  `portions` INT NULL,
+  INDEX `fk_MealPlan_has_Food_Food1_idx` (`foodId` ASC),
+  INDEX `fk_MealPlan_has_Food_MealPlan1_idx` (`mealPlanId` ASC),
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_MealPlan_has_Food_MealPlan1`
+    FOREIGN KEY (`mealPlanId`)
+    REFERENCES `NutritionTracker`.`MealPlan` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_MealPlan_has_Food_Food1`
+    FOREIGN KEY (`foodId`)
+    REFERENCES `NutritionTracker`.`Food` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
