@@ -156,30 +156,13 @@
                         <!-- The time line -->
                         <ul class="timeline">
                             <!-- timeline time label -->
-                            <li class="time-label">
-                                <span class="bg-yellow">
-                                Today
-                            </span>
-                            </li>
+                           <!--  <li class="time-label">
+                                <span class="bg-yellow">Today</span>
+                            </li> -->
                             <!-- /.timeline-label -->
-                            <!-- timeline item -->
-                            <% for (var i = 0; i < diary.length; i++) { %>
-                                <li>
-                                    <i class="fa fa-cutlery bg-red"></i>
-                                    <div class="timeline-item">
-                                        <span class="time"><i class="fa fa-clock-o" style="padding: 5px;"></i>
-                                            <time class="timeago" datetime="<%= diary[i].createdAt %>">1 minute ago</time>
-                                        </span>
-                                        <h3 class="timeline-header no-border">You had <%=diary[i].portions%> servings of 
-                                            <a href="/food"><%=diary[i].foodName%></a>
-                                        </h3>
-                                    </div>
-                                </li>
-                                <%}%>
-                                    <!-- END timeline item -->
-                                    <li>
-                                        <i class="fa fa-clock-o bg-gray"></i>
-                                    </li>
+                            
+                            <!-- END timeline item -->
+                            
                         </ul>
                     </div>
                     <!-- /.col -->
@@ -376,9 +359,11 @@
     <script src="js/app.min.js"></script>
     <!-- AdminLTE for demo purposes -->
     <script src="js/demo.js"></script>
-    <!-- <script src="jquery.min.js" type="text/javascript"></script> -->
     <!-- Update Time -->
     <script src="js/jquery.timeago.js" type="text/javascript"></script>
+    <!-- moment -->
+    <script src="js/moment.js" type="text/javascript"></script>
+
     <script type="text/javascript">
     $(document).ready(function() {
         $(".timeago").timeago();
@@ -386,6 +371,80 @@
 
     });
     </script>
+    <script>
+    $(document).ready(function() {
+        var diary = <%- JSON.stringify(diary)%>;
+
+        //console.log(diary);
+        var timeline = $(".timeline");
+
+        var cur = moment();
+
+        var arr = [];
+        var mealArr = [];
+
+        for (var i = 0; i < diary.length; i++) {
+            var foodEntryDate = moment(diary[i].createdAt);
+  
+            if (foodEntryDate.isSame(cur, 'day')) {
+                //console.log('here');
+                mealArr.push(diary[i]);
+            } 
+
+            if (!foodEntryDate.isSame(cur, 'day')) {
+                cur = foodEntryDate;
+                arr.push(mealArr);
+                mealArr = [];
+                mealArr.push(diary[i]);
+            }  
+        }
+
+        arr.push(mealArr);
+
+        for (var i = 0; i < arr.length; i++) {
+
+            var foodDate = moment(arr[i][0].createdAt);
+            var now = moment();
+
+            if (foodDate.isSame(now, 'day')) {
+                foodDate = "Today";
+            } else {
+                foodDate = moment(arr[i][0].createdAt).format('MM/DD');
+            }
+
+            var timeLabel = "<li class='time-label'>" +
+                                    "<span class='bg-yellow'>" +  foodDate  + "</span>" +
+                            "</li>";
+
+            timeline.append(timeLabel);
+            
+            for (var j = 0; j < arr[i].length; j++) {
+                
+                var foodDateAgo = moment(arr[i][j].createdAt);
+
+                var listItem = "<li>" +
+                                    "<i class='fa fa-cutlery bg-red'></i>" +
+                                    "<div class='timeline-item'>" +
+                                        "<span class='time'><i class='fa fa-clock-o' style='padding: 5px;'></i>" +
+                                            foodDateAgo.from(moment()) +
+                                        "</span>" +
+                                        "<h3 class='timeline-header no-border'>" +
+                                            "You had " + arr[i][j].portions + " servings of" +
+                                            "<a href='/food'> " + arr[i][j].foodName + "</a>" + 
+                                        "</h3>" +
+                                    "</div>" +
+                                "</li>";
+
+                timeline.append(listItem);
+            }
+        }
+
+        timeline.append("<li><i class='fa fa-clock-o bg-gray'></i></li>");
+    });
+
+    </script>
 </body>
 
 </html>
+
+

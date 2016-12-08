@@ -547,32 +547,33 @@ app.get('/diary', (req, res) => {
         var id = req.session.user.id;
 
         var query = "SELECT Client.id, FoodDiary.id, FoodDiary_Has_Food.portions, " +
-                        "Food.foodName, DATE_FORMAT(createdAt, '%Y-%m-%dT%TZ') AS createdAt " +
-                    "FROM Client " +
+                        "Food.foodName, createdAt " +
+                    "FROM Client " + 
                     "JOIN FoodDiary ON Client.id = FoodDiary.clientId " +
                     "JOIN FoodDiary_Has_Food  ON FoodDiary.id = FoodDiary_Has_Food.foodDiaryId " +
                     "JOIN Food ON FoodDiary_Has_Food.foodId = Food.id WHERE Client.id = ? " +
                     "ORDER BY createdAt DESC";
 
         pool.getConnection(function(error, connection) {
-            connection.query(query, [id], function(err, rows) {
+            var queryObj = connection.query(query, [id], function(err, rows) {
 
                 if (err) {
                     console.log(err);
                 } else {
+
+                    console.log(rows);
+
                     var data = {
                         diary: rows,
                         user: req.session.user
                     }
 
                     res.render('diary.ejs', data);
-
                 }
-
             });
 
+            console.log(queryObj.sql);
         });
-
     } else {
         res.redirect('/login');
     }
